@@ -1,0 +1,91 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/landing_page">
+
+    <!-- Spacer supaya box mulai dari tengah layar -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"/>
+
+    <!-- Kotak input dan tombol -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/box_background"
+        android:padding="24dp">
+
+        <!-- Title SIGN IN -->
+        <TextView
+            android:id="@+id/tvSignInTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SIGN IN"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#E68BB4"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="40dp"
+            android:layout_marginTop="20dp"/>
+
+        <!-- Username -->
+        <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Username"
+            android:textColorHint="#F1B2CC"
+            android:padding="12dp"
+            android:layout_marginBottom="36dp"
+            android:background="@drawable/et_background"
+            android:drawableStart="@drawable/ic_user"
+            android:drawablePadding="12dp"/>
+
+        <!-- Password -->
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Password"
+            android:textColorHint="#F1B2CC"
+            android:padding="12dp"
+            android:background="@drawable/et_background"
+            android:inputType="textPassword"
+            android:layout_marginBottom="36dp"
+            android:drawableStart="@drawable/ic_lock"
+            android:drawablePadding="12dp"/>
+
+        <!-- Login Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="LOGIN"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:background="@drawable/btn_pink"
+            app:backgroundTint="@null"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- TextView Sign Up -->
+        <TextView
+            android:id="@+id/tvSignUpPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#E68BB4"
+            android:textSize="14sp"
+            android:layout_gravity="center_horizontal"
+            android:text="Don’t have an account? Sign Up"
+            android:clickable="true"
+            android:focusable="true"/>
+
+    </LinearLayout>
+
+</LinearLayout>
