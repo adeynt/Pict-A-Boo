@@ -1,0 +1,57 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="32dp"
+    android:background="@drawable/landing_page">
+
+    <EditText
+        android:id="@+id/etUsername"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Username"
+        android:padding="12dp"
+        android:background="@drawable/et_background"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Email"
+        android:padding="12dp"
+        android:background="@drawable/et_background"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Password"
+        android:padding="12dp"
+        android:background="@drawable/et_background"
+        android:inputType="textPassword"
+        android:layout_marginBottom="12dp"/>
+
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Confirm Password"
+        android:padding="12dp"
+        android:background="@drawable/et_background"
+        android:inputType="textPassword"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/btnRegister"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="REGISTER"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:background="@drawable/btn_pink"/>
+</LinearLayout>

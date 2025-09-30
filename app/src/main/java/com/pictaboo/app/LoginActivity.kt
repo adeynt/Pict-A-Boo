@@ -37,7 +37,6 @@ class LoginActivity : AppCompatActivity() {
         }
 
         // Sign Up link
-        // Sign Up link hanya pada kata "Sign Up"
         val spannable = android.text.SpannableString("Don’t have an account? Sign Up")
         val start = spannable.indexOf("Sign Up")
         val end = start + "Sign Up".length
@@ -58,6 +57,5 @@ class LoginActivity : AppCompatActivity() {
         spannable.setSpan(clickableSpan, start, end, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         tvSignUpPrompt.text = spannable
         tvSignUpPrompt.movementMethod = android.text.method.LinkMovementMethod.getInstance()
-
     }
 }
