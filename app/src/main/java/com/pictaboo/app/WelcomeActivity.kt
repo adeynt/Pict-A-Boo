@@ -3,7 +3,7 @@ package com.pictaboo.app
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import android.widget.Button
+import com.google.android.material.button.MaterialButton
 
 class WelcomeActivity : AppCompatActivity() {
 
@@ -11,19 +11,15 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        val btnSignIn = findViewById<Button>(R.id.btnSignIn)
-        val btnSignUp = findViewById<Button>(R.id.btnSignUp)
+        val btnSignIn = findViewById<MaterialButton>(R.id.btnSignIn)
+        val btnSignUp = findViewById<MaterialButton>(R.id.btnSignUp)
 
         btnSignIn.setOnClickListener {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
+            startActivity(Intent(this, LoginActivity::class.java))
         }
+
         btnSignUp.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-            finish()
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 }
-

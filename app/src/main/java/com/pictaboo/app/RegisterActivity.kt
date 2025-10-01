@@ -2,42 +2,53 @@ package com.pictaboo.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 
 class RegisterActivity : AppCompatActivity() {
+
+    private lateinit var etUsername: TextInputEditText
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var etPassword: TextInputEditText
+    private lateinit var btnRegister: MaterialButton
+    private lateinit var tvLoginPrompt: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        val etUsername = findViewById<EditText>(R.id.etUsername)
-        val etEmail = findViewById<EditText>(R.id.etEmail)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val etConfirmPassword = findViewById<EditText>(R.id.etConfirmPassword)
-        val btnRegister = findViewById<Button>(R.id.btnRegister)
+        // Inisialisasi view
+        etUsername = findViewById(R.id.etUsername)
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        btnRegister = findViewById(R.id.btnRegister)
+        tvLoginPrompt = findViewById(R.id.tvLoginPrompt)
 
+        // Listener tombol register
         btnRegister.setOnClickListener {
-            val username = etUsername.text.toString().trim()
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
-            val confirmPassword = etConfirmPassword.text.toString().trim()
+            val username = etUsername.text?.toString()?.trim() ?: ""
+            val email = etEmail.text?.toString()?.trim() ?: ""
+            val password = etPassword.text?.toString()?.trim() ?: ""
 
-            if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-            } else if (password != confirmPassword) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             } else {
-                // TODO: Tambahkan logika register ke backend / Firebase
-                Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
+                // TODO: Tambahkan logika register (misal ke backend atau Firebase)
+                Toast.makeText(this, "Registration successful! Please sign in.", Toast.LENGTH_SHORT).show()
 
-                // Setelah register, pindah ke MainActivity
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                // ✅ Setelah register, pindah ke Login
+                startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
+        }
+
+        // 👇 Tambahan: teks "Already have an account? Sign In"
+        tvLoginPrompt.setOnClickListener {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
         }
     }
 }
