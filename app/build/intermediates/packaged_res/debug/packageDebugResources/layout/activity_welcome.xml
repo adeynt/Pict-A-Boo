@@ -1,0 +1,100 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/landing_page">
+
+    <!-- Logo di kiri atas -->
+    <ImageView
+        android:id="@+id/logoPictaboo"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/logo_pictabook"
+        android:contentDescription="Logo Pict-A-Boo"
+        android:layout_gravity="start|top"
+        android:layout_margin="16dp"/>
+
+    <!-- Konten utama di tengah -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+        <!-- Gambar di atas -->
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:src="@drawable/welcome_img"
+            android:contentDescription="Image Welcome"
+            android:layout_marginBottom="2dp"
+            android:scaleType="centerCrop"/>
+
+        <!-- Teks Welcome -->
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Welcome!"
+            android:textSize="32sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="45dp"
+            android:gravity="start"/>
+
+        <!-- Deskripsi di bawah Welcome -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Discover amazing features of Pict-A-Boo. Capture, edit, and share your moments easily!"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="24dp"
+            android:paddingStart="45dp"
+            android:paddingEnd="45dp"
+            android:gravity="start"
+            android:lineSpacingExtra="4dp"/>
+
+        <!-- Tombol Sign In dan Sign Up -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="45dp"
+            android:paddingEnd="45dp"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="SIGN IN"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/btn_pink"
+                app:backgroundTint="@null"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:text="SIGN UP"
+                android:textColor="#E68BB4"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:background="@drawable/btn_white"
+                app:backgroundTint="@null"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
