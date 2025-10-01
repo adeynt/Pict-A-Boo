@@ -30,7 +30,6 @@ class ProfileActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageView>(R.id.btn_back)
         val menuLogout = findViewById<TextView>(R.id.menuLogout)
 
-
         // Listener Tombol Edit Profile
         btnEditProfile.setOnClickListener {
             // Membuka halaman Edit Profile
@@ -57,7 +56,6 @@ class ProfileActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
     }
 
     // Fungsi untuk memuat data dari Shared Preferences
