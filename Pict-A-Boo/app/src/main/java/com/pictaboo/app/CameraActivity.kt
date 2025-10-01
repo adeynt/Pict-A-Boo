@@ -28,7 +28,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var btnBack: ImageButton
     private lateinit var btnSwitchCamera: ImageButton
     private lateinit var btnFlash: ImageButton
-    private lateinit var layoutPreviewPhotos: LinearLayout
+    private lateinit var laycdoutPreviewPhotos: LinearLayout
 
     private var imageCapture: ImageCapture? = null
     private var flashEnabled = false
