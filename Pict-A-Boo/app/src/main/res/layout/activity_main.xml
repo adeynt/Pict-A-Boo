@@ -283,6 +283,7 @@
             android:textColor="@color/baru" />
 
         <TextView
+            android:id="@+id/nav_profile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -291,6 +292,9 @@
             android:gravity="center_horizontal"
             android:text="Profile"
             android:textColor="@color/baru"/>
+
+
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

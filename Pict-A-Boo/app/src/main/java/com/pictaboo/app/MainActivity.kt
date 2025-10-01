@@ -3,6 +3,7 @@ package com.pictaboo.app
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,6 +25,12 @@ class MainActivity : AppCompatActivity() {
 
         btnStart.setOnClickListener {
             startActivity(Intent(this, Frames::class.java))
+        }
+
+        val navProfile = findViewById<TextView>(R.id.nav_profile)
+
+        navProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 }
