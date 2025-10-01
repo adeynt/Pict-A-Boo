@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.PictABoo" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.PictABoo" parent="Base.Theme.PictABoo" />
+
+    <style name="ProfileMenuItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">60dp</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/baru</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+</resources>
