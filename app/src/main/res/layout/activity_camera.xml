@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="16dp"/>
 
-    <!-- Preview Kamera (Landscape) -->
+    <!-- Preview Kamera -->
     <androidx.camera.view.PreviewView
         android:id="@+id/viewFinder"
         android:layout_width="0dp"
@@ -30,6 +30,20 @@
         app:layout_constraintDimensionRatio="4:3"
         android:scaleType="centerCrop"/>
 
+    <!-- TextView Countdown -->
+    <TextView
+        android:id="@+id/tvCountdown"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:textSize="80sp"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/viewFinder"
+        app:layout_constraintBottom_toBottomOf="@id/viewFinder"
+        app:layout_constraintStart_toStartOf="@id/viewFinder"
+        app:layout_constraintEnd_toEndOf="@id/viewFinder"
+        android:fontFamily="sans-serif-black"/>
 
     <!-- Horizontal scroll untuk preview foto -->
     <HorizontalScrollView
@@ -48,7 +62,7 @@
             android:orientation="horizontal"/>
     </HorizontalScrollView>
 
-    <!-- Kontrol Kamera (bawah) -->
+    <!-- Kontrol Kamera -->
     <LinearLayout
         android:id="@+id/controlPanel"
         android:layout_width="match_parent"
@@ -58,17 +72,7 @@
         android:background="#FFF0F5"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- Tombol Flash -->
-        <ImageButton
-            android:id="@+id/btnFlash"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_flash"
-            app:tint="@color/purple_700"
-            android:layout_margin="16dp"/>
-
-        <!-- Tombol Capture (Lingkaran) -->
+        <!-- Tombol Capture -->
         <ImageButton
             android:id="@+id/btnTakePhoto"
             android:layout_width="70dp"
@@ -76,7 +80,7 @@
             android:background="@drawable/bg_circle_button"
             android:layout_margin="16dp"/>
 
-        <!-- Tombol Ganti Kamera (Depan/Belakang) -->
+        <!-- Tombol Ganti Kamera -->
         <ImageButton
             android:id="@+id/btnSwitchCamera"
             android:layout_width="50dp"
