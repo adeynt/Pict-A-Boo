@@ -44,14 +44,19 @@ class ResultActivity : AppCompatActivity() {
         val leftPct = 0.05f
         val rightPct = 0.96f
 
-        val top1TopPct = 0.02f
-        val top1BottomPct = 0.28f
+        val slotHeight = 0.27f   // tinggi tiap foto = 27%
+        val gap = 0.026f         // jarak antar foto = 2.6%
+        val startTop = 0.02f     // margin atas (4%)
 
-        val top2TopPct = 0.30f
-        val top2BottomPct = 0.60f
+        val top1TopPct = startTop
+        val top1BottomPct = top1TopPct + slotHeight
 
-        val top3TopPct = 0.60f
-        val top3BottomPct = 0.92f
+        val top2TopPct = top1BottomPct + gap
+        val top2BottomPct = top2TopPct + slotHeight
+
+        val top3TopPct = top2BottomPct + gap
+        val top3BottomPct = top3TopPct + slotHeight
+
 
         val rectTop = Rect(
             (w * leftPct).toInt(),
