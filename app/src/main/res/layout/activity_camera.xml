@@ -15,7 +15,8 @@
         app:tint="@color/purple_700"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="16dp"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="50dp"/>
 
     <!-- Preview Kamera -->
     <androidx.camera.view.PreviewView
@@ -78,7 +79,7 @@
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:background="@drawable/bg_circle_button"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp" />
 
         <!-- Tombol Ganti Kamera -->
         <ImageButton

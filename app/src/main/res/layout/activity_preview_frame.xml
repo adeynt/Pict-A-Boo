@@ -15,39 +15,46 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center_vertical"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Tombol Back -->
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_back"
+            android:color="@color/baru"
+            app:layout_constraintTop_toBottomOf="@id/logo_area"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <ImageView
             android:layout_width="77dp"
             android:layout_height="50dp"
             android:contentDescription="@string/app_name"
             android:scaleType="fitCenter"
-            android:src="@drawable/logo_pictabook"/>
+            app:layout_constraintTop_toBottomOf="@id/logo_area"
+            android:src="@drawable/logo_pictabook"
+            android:layout_marginRight="20dp"/>
 
-        <TextView
-            android:id="@+id/nama_logo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="PICT A BOO"
-            android:textStyle="bold"
-            android:textSize="26sp"
-            android:textColor="#BA2234"/>
+<!--        <TextView-->
+<!--            android:id="@+id/nama_logo"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="PICT A BOO"-->
+<!--            android:textStyle="bold"-->
+<!--            android:textSize="26sp"-->
+<!--            android:textColor="#BA2234"/>-->
     </LinearLayout>
-
-    <!-- Tombol Back -->
-    <Button
-        android:id="@+id/btn_back"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="20dp"
-        android:background="@drawable/ic_back"
-        android:backgroundTint="@color/baru"
-        app:layout_constraintTop_toBottomOf="@id/logo_area"
-        app:layout_constraintStart_toStartOf="parent"/>
 
     <!-- Konten Scrollable -->
     <androidx.core.widget.NestedScrollView
@@ -55,7 +62,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/btn_back"
+        app:layout_constraintTop_toBottomOf="@id/logo_area"
         app:layout_constraintBottom_toTopOf="@id/bottom_nav_bar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
