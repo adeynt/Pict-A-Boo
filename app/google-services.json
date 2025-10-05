@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1073001000449",
+    "project_id": "fir-pictaboo",
+    "storage_bucket": "fir-pictaboo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073001000449:android:5b6d46728708c64c881a00",
+        "android_client_info": {
+          "package_name": "com.pictaboo.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBurp0aGzf_BcFcWgDQKqTaNYNddrlwVrs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
