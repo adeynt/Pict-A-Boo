@@ -12,13 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/arrow_circle_left"
+            android:src="@drawable/ic_back"
             android:contentDescription="Back Button"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
@@ -34,7 +35,9 @@
             android:orientation="horizontal"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
-            android:paddingStart="40dp"> <ImageView
+            android:paddingStart="40dp">
+
+            <ImageView
             android:layout_width="120dp"
             android:layout_height="50dp"
             android:contentDescription="@string/app_name"
@@ -61,7 +64,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tanya Jawab Paling Kece (FAQ)"
+                android:text="The Coolest Q&amp;A (FAQ)"
                 android:textColor="@color/baru"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -82,12 +85,12 @@
                     android:textStyle="bold"
                     android:textColor="@color/baru"
                     android:textSize="18sp"
-                    android:text="Q: Gimana sih cara bikin fotoku makin 'Boo-tiful' dengan bingkai?"
+                    android:text="How do I make my photo extra 'Boo-tiful' with a frame?"
                     android:layout_marginBottom="4dp"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="A: Gampang banget! Cukup ke tab 'Frame' di navigasi bawah, pilih bingkai paling favoritmu, lalu tekan 'Gunakan'. Kamera akan langsung aktif dan *boom*! Fotomu jadi makin keren dalam sekejap!"
+                    android:text="A: Super easy! Just head over to the 'Frame' tab on the bottom navigation, pick your favorite frame, then tap 'Use'. The camera will pop up instantly and boom! Your photo gets an instant glow-up!"
                     android:textColor="@color/black"
                     android:textSize="16sp"/>
             </LinearLayout>
@@ -107,12 +110,12 @@
                     android:textStyle="bold"
                     android:textColor="@color/baru"
                     android:textSize="18sp"
-                    android:text="Q: Kalau mau lihat hasil foto keceku, ke mana ya?"
+                    android:text="Q: Where can I find all my awesome photos?"
                     android:layout_marginBottom="4dp"/>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="A: Semua koleksi foto artistikmu ada di 'My Photos'. Akses cepatnya bisa kamu temukan di halaman Profile ini. Jangan lupa dipamerin ya!"
+                    android:text="A: All your artsy photo collections are in 'My Photos'. You can access it quickly right from this Profile page. Don’t forget to show them off!"
                     android:textColor="@color/black"
                     android:textSize="16sp"/>
             </LinearLayout>

@@ -57,7 +57,7 @@ class PhotoOption : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                Toast.makeText(this, "Tidak ada foto yang dipilih.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "No photo selected.", Toast.LENGTH_SHORT).show()
             }
         }
     }

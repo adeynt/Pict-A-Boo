@@ -115,7 +115,7 @@ class CameraActivity : AppCompatActivity() {
                 cameraProvider?.unbindAll()
                 cameraProvider?.bindToLifecycle(this, cameraSelector, preview, imageCapture)
             } catch (e: Exception) {
-                Toast.makeText(this, "Gagal membuka kamera", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to open camera", Toast.LENGTH_SHORT).show()
             }
         }, ContextCompat.getMainExecutor(this))
     }
@@ -154,7 +154,7 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    Toast.makeText(baseContext, "Gagal ambil foto: ${exc.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(baseContext, "Failed to capture photo: ${exc.message}", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
@@ -169,7 +169,7 @@ class CameraActivity : AppCompatActivity() {
 
                     // NORMAL
                     if (existingPhotos.size >= MAX_PHOTOS) {
-                        Toast.makeText(baseContext, "Maksimal $MAX_PHOTOS foto", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(baseContext, "Maximum of $MAX_PHOTOS photo", Toast.LENGTH_SHORT).show()
                         return
                     }
 
@@ -220,7 +220,7 @@ class CameraActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) startCamera()
             else {
-                Toast.makeText(this, "Permission tidak diberikan", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permission not granted", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }

@@ -39,7 +39,7 @@ class ResultActivity : AppCompatActivity() {
 
         // Kalau belum ada 3 foto, kembali ke kamera
         if (photos.size < 3) {
-            Toast.makeText(this, "Butuh 3 foto untuk membuat strip.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You need 3 photos to create a strip.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -49,7 +49,7 @@ class ResultActivity : AppCompatActivity() {
         if (resultBmp != null) {
             imgResult.setImageBitmap(resultBmp)
         } else {
-            Toast.makeText(this, "Gagal memuat hasil foto.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Failed to load photo result.", Toast.LENGTH_SHORT).show()
         }
 
         // Tombol Back
@@ -66,7 +66,7 @@ class ResultActivity : AppCompatActivity() {
         btnSave.setOnClickListener {
             resultBmp?.let { bmp ->
                 saveImageToGallery(bmp)
-            } ?: Toast.makeText(this, "Gagal menyimpan, foto kosong.", Toast.LENGTH_SHORT).show()
+            } ?: Toast.makeText(this, "Failed to save, photo is empty.", Toast.LENGTH_SHORT).show()
         }
 
         // Klik di area foto untuk retake bagian tertentu
@@ -127,9 +127,9 @@ class ResultActivity : AppCompatActivity() {
 
     /** 🔹 Dialog pilih bagian foto yang mau diretake */
     private fun showChooseSlotDialog() {
-        val items = arrayOf("Foto 1", "Foto 2", "Foto 3")
+        val items = arrayOf("Photo 1", "Photo 2", "Photo 3")
         AlertDialog.Builder(this)
-            .setTitle("Pilih foto yang ingin di-retake")
+            .setTitle("Select a photo to retake")
             .setItems(items) { _, which ->
                 showRetakeDialog(which)
             }
@@ -139,16 +139,16 @@ class ResultActivity : AppCompatActivity() {
     /** 🔹 Dialog konfirmasi retake */
     private fun showRetakeDialog(slotIndex: Int) {
         AlertDialog.Builder(this)
-            .setTitle("Retake Foto")
-            .setMessage("Ambil ulang foto ke-${slotIndex + 1}?")
-            .setPositiveButton("Ya") { _, _ ->
+            .setTitle("Retake Photo")
+            .setMessage("Retake photo ${slotIndex + 1}?")
+            .setPositiveButton("Yes") { _, _ ->
                 val intent = Intent(this, CameraActivity::class.java)
                 intent.putExtra("slotIndex", slotIndex)
                 intent.putParcelableArrayListExtra("photos", photos)
                 startActivity(intent)
                 finish()
             }
-            .setNegativeButton("Batal", null)
+            .setNegativeButton("Cancel", null)
             .show()
     }
 
@@ -169,9 +169,9 @@ class ResultActivity : AppCompatActivity() {
             contentResolver.openOutputStream(uri)?.use { outputStream ->
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
             }
-            Toast.makeText(this, "Berhasil disimpan ke galeri 🎉", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Successfully saved to gallery 🎉", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(this, "Gagal menyimpan foto", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Failed to save photo", Toast.LENGTH_SHORT).show()
         }
     }
 

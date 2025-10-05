@@ -12,13 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/arrow_circle_left"
+            android:src="@drawable/ic_back"
             android:contentDescription="Back Button"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
@@ -58,7 +59,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Yuk Kenalan Sama PICT A BOO!"
+                android:text="Let's Get to Know PICT A BOO!"
                 android:textColor="@color/baru"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -74,7 +75,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="PICT A BOO adalah tempatnya kamu berkreasi! Kami hadir untuk mengubah momen-momen biasa jadi luar biasa dengan sentuhan bingkai foto yang *stylish* dan imut. Cukup jepret, pilih bingkai kesukaanmu, dan *voilà*! Fotomu siap memukau dunia. Semua dibuat dengan semangat penuh warna dan keceriaan!"
+                android:text="PICT A BOO is your ultimate creative playground! We're here to turn ordinary moments into something extraordinary with our stylish and adorable photo frames. Just snap a pic, choose your favorite frame, and voilà! Your photo is ready to wow the world. Everything is made with a splash of color and a whole lot of joy!"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:justificationMode="inter_word"
@@ -83,7 +84,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Edisi: Versi 1.0.0 (Siap Bikin Fotomu Kece!)"
+                android:text="Edition: Version 1.0.0 (Ready to Make Your Photos Pop!)"
                 android:textColor="@color/baru"
                 android:textSize="16sp"
                 android:gravity="center_horizontal"
@@ -92,7 +93,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Ada Masalah? Curhat ke: support@pictaboo.com"
+                android:text="Got an issue? Tell us at: support@pictaboo.com"
                 android:textColor="@color/baru"
                 android:textSize="16sp"
                 android:gravity="center_horizontal"

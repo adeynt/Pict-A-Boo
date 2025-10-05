@@ -15,7 +15,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -115,7 +115,6 @@
                         android:layout_marginEnd="16dp"
                         android:src="@drawable/image2"
                         android:scaleType="centerCrop"
-                        android:background="@drawable/rounded_background"
                         android:padding="4dp" />
 
                     <ImageView
@@ -124,7 +123,6 @@
                         android:layout_marginEnd="16dp"
                         android:src="@drawable/image1"
                         android:scaleType="centerCrop"
-                        android:background="@drawable/rounded_background"
                         android:padding="4dp" />
 
                     <ImageView
@@ -133,7 +131,6 @@
                         android:layout_marginEnd="16dp"
                         android:src="@drawable/image2"
                         android:scaleType="centerCrop"
-                        android:background="@drawable/rounded_background"
                         android:padding="4dp" />
 
                     <ImageView
@@ -142,7 +139,6 @@
                         android:layout_marginEnd="16dp"
                         android:src="@drawable/image1"
                         android:scaleType="centerCrop"
-                        android:background="@drawable/rounded_background"
                         android:padding="4dp" />
 
                     <ImageView
@@ -151,7 +147,6 @@
                         android:layout_marginEnd="16dp"
                         android:src="@drawable/image2"
                         android:scaleType="centerCrop"
-                        android:background="@drawable/rounded_background"
                         android:padding="4dp" />
                 </LinearLayout>
             </HorizontalScrollView>
@@ -176,10 +171,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:layout_gravity="center"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp">
 
                     <LinearLayout
+                        android:id="@+id/btn_frame"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -188,18 +185,19 @@
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="180dp"
-                            android:src="@drawable/frame4"
+                            android:src="@drawable/frame_1"
                             android:background="@drawable/rounded_background"
-                            android:padding="4dp" />
+                            android:padding="22dp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="2"
-                            android:textColor="@color/black"
+                            android:textColor="@color/baru"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/btn_frame2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -208,34 +206,34 @@
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="180dp"
-                            android:src="@drawable/frame4"
+                            android:src="@drawable/frame_2"
                             android:background="@drawable/rounded_background"
-                            android:padding="4dp" />
+                            android:padding="22dp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="3"
-                            android:textColor="@color/black"
+                            android:textColor="@color/baru"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/btn_frame3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:gravity="center_horizontal"
-                        android:layout_marginEnd="16dp">
+                        android:gravity="center_horizontal">
                         <ImageView
                             android:layout_width="100dp"
                             android:layout_height="180dp"
-                            android:src="@drawable/frame4"
+                            android:src="@drawable/frame_3"
                             android:background="@drawable/rounded_background"
-                            android:padding="4dp" />
+                            android:padding="22dp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="4"
-                            android:textColor="@color/black"
+                            android:textColor="@color/baru"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -256,6 +254,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
+            android:id="@+id/nav_home"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -266,6 +265,7 @@
             android:textColor="@color/baru" />
 
         <TextView
+            android:id="@+id/nav_frame"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -276,6 +276,7 @@
             android:textColor="@color/baru" />
 
         <TextView
+            android:id="@+id/nav_project"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -295,9 +296,6 @@
             android:gravity="center_horizontal"
             android:text="Profile"
             android:textColor="@color/baru"/>
-
-
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

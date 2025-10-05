@@ -15,6 +15,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="16dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -28,7 +29,7 @@
             android:id="@+id/nama_logo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="PICT A BOO"
+            android:text="PICT A BOO"
             android:textStyle="bold"
             android:textSize="26sp"
             android:textColor="#BA2234"/>
@@ -110,7 +111,7 @@
                             android:layout_height="180dp"
                             android:src="@drawable/frame_1"
                             android:background="@drawable/rounded_background"
-                            android:padding="4dp"/>
+                            android:padding="22dp"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -131,7 +132,7 @@
                             android:layout_height="180dp"
                             android:src="@drawable/frame_2"
                             android:background="@drawable/rounded_background"
-                            android:padding="4dp" />
+                            android:padding="22dp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -151,7 +152,7 @@
                             android:layout_height="180dp"
                             android:src="@drawable/frame_3"
                             android:background="@drawable/rounded_background"
-                            android:padding="4dp" />
+                            android:padding="22dp" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -180,7 +181,7 @@
                         android:layout_height="180dp"
                         android:src="@drawable/frame_4"
                         android:background="@drawable/rounded_background"
-                        android:padding="4dp"/>
+                        android:padding="22dp"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -201,7 +202,7 @@
                         android:layout_height="180dp"
                         android:src="@drawable/frame_5"
                         android:background="@drawable/rounded_background"
-                        android:padding="4dp" />
+                        android:padding="22dp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -221,7 +222,7 @@
                         android:layout_height="180dp"
                         android:src="@drawable/frame_6"
                         android:background="@drawable/rounded_background"
-                        android:padding="4dp" />
+                        android:padding="22dp" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -246,6 +247,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
+            android:id="@+id/nav_home"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -256,6 +258,7 @@
             android:textColor="@color/baru" />
 
         <TextView
+            android:id="@+id/nav_frame"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -266,6 +269,7 @@
             android:textColor="@color/baru" />
 
         <TextView
+            android:id="@+id/nav_project"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -276,6 +280,7 @@
             android:textColor="@color/baru" />
 
         <TextView
+            android:id="@+id/nav_profile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

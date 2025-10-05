@@ -13,13 +13,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/arrow_circle_left"
+            android:src="@drawable/ic_back"
             android:contentDescription="Back Button"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
@@ -132,8 +133,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:onClick="goToMyPhotos"
-                    app:drawableStartCompat="@drawable/ic_gallery"
-                    app:drawableTint="@color/baru" />
+                    app:drawableStartCompat="@drawable/ic_my_photos"/>
 
                 <TextView
                     android:id="@+id/menuHelp"
@@ -169,5 +169,58 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/homeicon"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Home"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_frame"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Frame"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_projects"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Projects"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:id="@+id/nav_profile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_user"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Profile"
+            android:textColor="@color/baru"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

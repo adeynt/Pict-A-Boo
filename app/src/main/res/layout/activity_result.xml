@@ -50,9 +50,9 @@
             android:layout_width="120dp"
             android:layout_height="48dp"
             android:text="Retake"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:layout_marginEnd="12dp"
-            android:background="@drawable/rounded_button" />
+            android:backgroundTint="#E68BB4"/>
 
         <Button
             android:id="@+id/btnSave"
@@ -60,7 +60,7 @@
             android:layout_height="48dp"
             android:text="Save"
             android:textColor="@android:color/white"
-            android:background="@drawable/rounded_button" />
+            android:backgroundTint="#E68BB4" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

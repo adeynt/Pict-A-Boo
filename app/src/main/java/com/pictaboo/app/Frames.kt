@@ -3,6 +3,7 @@ package com.pictaboo.app
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -42,5 +43,24 @@ class Frames : AppCompatActivity() {
         btnFrame4.setOnClickListener { openPreviewWithFrame(R.drawable.frame_4) }
         btnFrame5.setOnClickListener { openPreviewWithFrame(R.drawable.frame_5) }
         btnFrame6.setOnClickListener { openPreviewWithFrame(R.drawable.frame_6) }
+
+        val navProfile = findViewById<TextView>(R.id.nav_profile)
+
+        navProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
+        val navHome = findViewById<TextView>(R.id.nav_home)
+
+        navHome.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        val navFrame = findViewById<TextView>(R.id.nav_frame)
+
+        navFrame.setOnClickListener {
+            startActivity(Intent(this, Frames::class.java))
+        }
     }
+
 }
