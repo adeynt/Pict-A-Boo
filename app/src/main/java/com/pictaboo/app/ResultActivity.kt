@@ -12,6 +12,13 @@ import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import java.io.OutputStream
+import java.io.ByteArrayOutputStream // DIUBAH: Menggunakan import ini daripada menulis penuh
+// START: TAMBAHAN IMPORTS FIREBASE
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.Timestamp // BARU: Tambahkan import ini
+// END: TAMBAHAN IMPORTS FIREBASE
 
 class ResultActivity : AppCompatActivity() {
 
@@ -25,7 +32,15 @@ class ResultActivity : AppCompatActivity() {
     private var resultBmp: Bitmap? = null
     private var photos: ArrayList<Uri> = arrayListOf()
 
+    // START: INISIALISASI FIREBASE
+    private val auth = FirebaseAuth.getInstance()
+    private val storageRef = FirebaseStorage.getInstance().reference
+    private val db = FirebaseFirestore.getInstance()
+    // END: INISIALISASI FIREBASE
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // ... (onCreate code remains the same up to btnSave.setOnClickListener) ...
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
@@ -62,10 +77,11 @@ class ResultActivity : AppCompatActivity() {
             showChooseSlotDialog()
         }
 
-        // Tombol Save
+        // Tombol Save (DIUBAH untuk menyimpan ke Firebase)
         btnSave.setOnClickListener {
             resultBmp?.let { bmp ->
-                saveImageToGallery(bmp)
+                // Opsi lama: saveImageToGallery(bmp)
+                saveImageToFirebase(bmp) // Panggil fungsi Firebase
             } ?: Toast.makeText(this, "Failed to save, photo is empty.", Toast.LENGTH_SHORT).show()
         }
 
@@ -83,6 +99,7 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
+    // ... (createFramedResult, showChooseSlotDialog, showRetakeDialog tetap sama) ...
     /** 🔹 Membuat hasil akhir dengan 3 foto + frame */
     private fun createFramedResult(photos: ArrayList<Uri>): Bitmap? {
         val frameBmp = BitmapFactory.decodeResource(resources, FRAME_RES_ID)
@@ -152,7 +169,54 @@ class ResultActivity : AppCompatActivity() {
             .show()
     }
 
-    /** 🔹 Simpan hasil ke galeri */
+    // FUNGSI SAVE KE FIREBASE YANG SUDAH DIPERBAIKI IMPORTS DAN LOGIKANYA
+    /** 🔹 Simpan hasil ke Firebase Storage dan Firestore */
+    private fun saveImageToFirebase(bitmap: Bitmap) {
+        val user = auth.currentUser ?: run {
+            Toast.makeText(this, "User not logged in. Please log in first.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val filename = "pictaboo_photo_${System.currentTimeMillis()}.jpg"
+        // Lokasi penyimpanan: users/{UID}/photos/{filename}
+        val photoRef = storageRef.child("users/${user.uid}/photos/$filename")
+
+        // Konversi Bitmap ke ByteArray
+        val baos = ByteArrayOutputStream() // Menggunakan import yang sudah disederhanakan
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        // 1. Upload ke Firebase Storage
+        photoRef.putBytes(data)
+            .addOnSuccessListener { taskSnapshot ->
+                // 2. Dapatkan URL setelah berhasil diupload
+                photoRef.downloadUrl.addOnSuccessListener { uri ->
+                    val photoUrl = uri.toString()
+
+                    // 3. Simpan Metadata ke Firestore
+                    val photoData = hashMapOf(
+                        "userId" to user.uid,
+                        "url" to photoUrl,
+                        "timestamp" to Timestamp.now() // Menggunakan Timestamp yang sudah diimpor
+                    )
+
+                    db.collection("photos")
+                        .add(photoData)
+                        .addOnSuccessListener { documentReference ->
+                            Toast.makeText(this, "Photo saved to Projects! 🎉", Toast.LENGTH_LONG).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Failed to save metadata: ${e.message}", Toast.LENGTH_LONG).show()
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Upload failed: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    // ... (saveImageToGallery, loadBitmapFromUri, getCenterCroppedScaledBitmap, mapTouchToImageCoords tetap sama) ...
+    /** 🔹 Simpan hasil ke galeri (Fungsi lama, tetap ada) */
     private fun saveImageToGallery(bitmap: Bitmap) {
         val filename = "PictABoo_${System.currentTimeMillis()}.jpg"
         val contentValues = ContentValues().apply {

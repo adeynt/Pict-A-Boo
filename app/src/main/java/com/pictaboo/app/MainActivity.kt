@@ -59,5 +59,11 @@ class MainActivity : AppCompatActivity() {
         navFrame.setOnClickListener {
             startActivity(Intent(this, Frames::class.java))
         }
+
+        val navProject = findViewById<TextView>(R.id.nav_project)
+
+        navProject.setOnClickListener {
+            startActivity(Intent(this, ProjectsActivity::class.java))
+        }
     }
 }

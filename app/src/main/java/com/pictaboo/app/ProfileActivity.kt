@@ -2,7 +2,7 @@ package com.pictaboo.app
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View // PENTING: Harus ada untuk fungsi onClick dari XML!
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -10,7 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 
 // DEKLARASI CONST VAL DI SINI
@@ -18,7 +17,7 @@ const val PREFS_NAME = "PictABooPrefs"
 const val KEY_USERNAME = "username"
 const val KEY_EMAIL = "email"
 
-class ProfileActivity : AppCompatActivity() {
+class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogListener { // Implementasikan interface di sini!
 
     private lateinit var auth: FirebaseAuth
 
@@ -32,7 +31,6 @@ class ProfileActivity : AppCompatActivity() {
 
         val btnBack = findViewById<ImageView>(R.id.btn_back)
 
-        // Listener Tombol Kembali
         btnBack.setOnClickListener {
             finish()
         }
@@ -63,37 +61,38 @@ class ProfileActivity : AppCompatActivity() {
         loadProfileData()
     }
 
-    // --- FUNGSI HANDLER DARI XML (WAJIB ADA) ---
-
-    // Dipanggil dari menuMyPhotos
     fun goToMyPhotos(view: View) {
         Toast.makeText(this, "Opening My Photos...", Toast.LENGTH_SHORT).show()
     }
 
-    // Dipanggil dari menuHelp
     fun goToFaq(view: View) {
         val intent = Intent(this, FaqActivity::class.java)
         startActivity(intent)
     }
 
-    // Dipanggil dari menuAboutApp
     fun goToAboutApp(view: View) {
         val intent = Intent(this, AboutAppActivity::class.java)
         startActivity(intent)
     }
 
-    // Dipanggil dari btnEditProfile
     fun editProfile(view: View) {
         startActivity(Intent(this, EditProfileActivity::class.java))
     }
 
     // Dipanggil dari menuLogout
     fun logout(view: View) {
+        val logoutDialog = LogoutDialogFragment()
+        logoutDialog.setLogoutDialogListener(this)
+        logoutDialog.show(supportFragmentManager, "LogoutConfirmationDialog")
+    }
+
+    override fun onLogoutConfirmed() {
         auth.signOut()
         Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(this, WelcomeActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
+        finish()
     }
 }

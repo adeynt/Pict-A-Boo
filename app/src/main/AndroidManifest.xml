@@ -70,6 +70,10 @@
             android:label="About App"
             android:parentActivityName=".ProfileActivity"
             android:theme="@style/Theme.PictABoo"/>
+
+        <activity
+            android:name=".ProjectsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

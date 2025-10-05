@@ -3,6 +3,9 @@ package com.pictaboo.app
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory // Wajib untuk BitmapFactory.decodeFile
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -20,6 +23,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.exifinterface.media.ExifInterface // Digunakan untuk membaca metadata orientasi
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -114,7 +118,7 @@ class CameraActivity : AppCompatActivity() {
 
                 cameraProvider?.unbindAll()
                 cameraProvider?.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 Toast.makeText(this, "Failed to open camera", Toast.LENGTH_SHORT).show()
             }
         }, ContextCompat.getMainExecutor(this))
@@ -124,8 +128,6 @@ class CameraActivity : AppCompatActivity() {
         super.onDestroy()
         cameraProvider?.unbindAll()
     }
-
-    /** ================= COUNTDOWN + FOTO ================= */
     private fun startTimerAndTakePhoto() {
         tvCountdown.visibility = android.view.View.VISIBLE
         object : CountDownTimer(3000, 1000) {
@@ -158,7 +160,28 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val uri = Uri.fromFile(photoFile)
+
+                    // --- START: LOGIKA ROTASI BARU ---
+                    // 1. Load file sebagai Bitmap
+                    val originalBitmap = BitmapFactory.decodeFile(photoFile.absolutePath)
+
+                    if (originalBitmap != null) {
+                        // 2. Putar Bitmap berdasarkan Exif (jika perlu)
+                        val rotatedBitmap = rotateBitmap(originalBitmap, photoFile)
+
+                        // 3. Timpa file lama dengan Bitmap yang sudah diputar
+                        try {
+                            photoFile.outputStream().use { outputStream ->
+                                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(baseContext, "Gagal memproses rotasi: ${e.message}", Toast.LENGTH_SHORT).show()
+                            return
+                        }
+                    }
+                    // --- END: LOGIKA ROTASI BARU ---
+
+                    val uri = Uri.fromFile(photoFile) // Sekarang file ini sudah dirotasi
 
                     // RETAKE
                     if (slotIndex != null && slotIndex!! in existingPhotos.indices) {
@@ -183,6 +206,40 @@ class CameraActivity : AppCompatActivity() {
                 }
             })
     }
+
+    /** Membaca dan menerapkan rotasi Exif ke Bitmap */
+    private fun rotateBitmap(bitmap: Bitmap, photoFile: File): Bitmap {
+        try {
+            val exifInterface = ExifInterface(photoFile.absolutePath)
+            val orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+            )
+
+            val matrix = Matrix()
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+                // Tambahkan kasus lain jika diperlukan (misalnya flip)
+                else -> return bitmap
+            }
+
+            return Bitmap.createBitmap(
+                bitmap,
+                0,
+                0,
+                bitmap.width,
+                bitmap.height,
+                matrix,
+                true
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return bitmap
+        }
+    }
+
 
     /** ================= UTIL ================= */
     private fun refreshPreviewPhotos() {

@@ -21,6 +21,21 @@ class PhotoOption : AppCompatActivity() {
 
     private var frameId: Int = 0 // Tambahkan variabel untuk menampung frame
 
+    // START: LAUNCHER BARU UNTUK IZIN KAMERA
+    private val requestCameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Izin diberikan, luncurkan kamera
+            val intent = Intent(this, CameraActivity::class.java)
+            intent.putExtra("FRAME_ID", frameId)
+            startActivity(intent)
+        } else {
+            Toast.makeText(this, "Izin kamera ditolak.", Toast.LENGTH_SHORT).show()
+        }
+    }
+    // END: LAUNCHER BARU UNTUK IZIN KAMERA
+
     // Permission request untuk Galeri
     private val requestGalleryPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -87,11 +102,13 @@ class PhotoOption : AppCompatActivity() {
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED
         ) {
+            // Izin sudah ada, langsung buka kamera
             val intent = Intent(this, CameraActivity::class.java)
             intent.putExtra("FRAME_ID", frameId) // kirim frame ke CameraActivity juga
             startActivity(intent)
         } else {
-            // request permission kamera (kalau belum)
+            // FIX: Minta izin menggunakan launcher yang sudah dideklarasikan
+            requestCameraPermission.launch(Manifest.permission.CAMERA)
         }
     }
 
