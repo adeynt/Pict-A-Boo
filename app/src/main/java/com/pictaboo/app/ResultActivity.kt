@@ -10,8 +10,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.MotionEvent
 import android.widget.*
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import java.io.OutputStream
 
 class ResultActivity : AppCompatActivity() {
 
@@ -20,15 +20,10 @@ class ResultActivity : AppCompatActivity() {
     private lateinit var btnRetake: Button
     private lateinit var btnSave: Button
 
-    private var frameResId: Int = R.drawable.my_frame
+    private val FRAME_RES_ID = R.drawable.my_frame
     private val rects = mutableListOf<Rect>()
     private var resultBmp: Bitmap? = null
     private var photos: ArrayList<Uri> = arrayListOf()
-    private var isFromGallery: Boolean = false
-    private val MAX_SLOTS = 3
-
-    // Untuk replace slot
-    private var currentReplacingSlot: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,117 +34,58 @@ class ResultActivity : AppCompatActivity() {
         btnRetake = findViewById(R.id.btnRetake)
         btnSave = findViewById(R.id.btnSave)
 
-        // Ambil FRAME_ID dari intent
-        frameResId = intent.getIntExtra("FRAME_ID", R.drawable.my_frame)
-
         // Ambil foto dari intent
         photos = intent.getParcelableArrayListExtra("photos") ?: arrayListOf()
 
-        // Menentukan apakah ini dari Galeri
-        val comingFromCameraRetake = intent.getIntExtra("slotIndex", -1) != -1
-        isFromGallery = photos.size > 0 && !comingFromCameraRetake && photos.size < MAX_SLOTS
-
-        if (photos.isEmpty()) {
-            Toast.makeText(this, "Tidak ada foto yang dipilih.", Toast.LENGTH_SHORT).show()
+        // Kalau belum ada 3 foto, kembali ke kamera
+        if (photos.size < 3) {
+            Toast.makeText(this, "Butuh 3 foto untuk membuat strip.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         // Gabungkan foto ke dalam frame
-        showResult()
+        resultBmp = createFramedResult(photos)
+        if (resultBmp != null) {
+            imgResult.setImageBitmap(resultBmp)
+        } else {
+            Toast.makeText(this, "Gagal memuat hasil foto.", Toast.LENGTH_SHORT).show()
+        }
 
         // Tombol Back
-        btnBack.setOnClickListener { finish() }
+        btnBack.setOnClickListener {
+            finish()
+        }
 
-        // Tombol Retake / Ganti Semua
-        if (isFromGallery) {
-            btnRetake.text = "Ganti Semua"
-            btnRetake.setOnClickListener {
-                val intent = Intent(this, PhotoOption::class.java)
-                intent.putExtra("FRAME_ID", frameResId) // teruskan frame
-                startActivity(intent)
-                finish()
-            }
-
-            // Touch listener untuk replace slot
-            imgResult.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN && resultBmp != null) {
-                    val coords = mapTouchToImageCoords(imgResult, resultBmp!!, event.x, event.y)
-                    val clickedSlot =
-                        rects.indexOfFirst { it.contains(coords.x.toInt(), coords.y.toInt()) }
-                    if (clickedSlot != -1) showReplaceSlotDialog(clickedSlot)
-                }
-                true
-            }
-        } else {
-            btnRetake.text = "Retake"
-            btnRetake.setOnClickListener { showChooseSlotDialog() }
-
-            imgResult.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_DOWN && resultBmp != null) {
-                    val coords = mapTouchToImageCoords(imgResult, resultBmp!!, event.x, event.y)
-                    val clickedSlot =
-                        rects.indexOfFirst { it.contains(coords.x.toInt(), coords.y.toInt()) }
-                    if (clickedSlot != -1) showRetakeDialog(clickedSlot)
-                }
-                true
-            }
+        // Tombol Retake
+        btnRetake.setOnClickListener {
+            showChooseSlotDialog()
         }
 
         // Tombol Save
         btnSave.setOnClickListener {
-            resultBmp?.let { saveImageToGallery(it) }
-                ?: Toast.makeText(this, "Gagal menyimpan, foto kosong.", Toast.LENGTH_SHORT).show()
+            resultBmp?.let { bmp ->
+                saveImageToGallery(bmp)
+            } ?: Toast.makeText(this, "Gagal menyimpan, foto kosong.", Toast.LENGTH_SHORT).show()
         }
-    }
 
-    /** 🔹 Tampilkan hasil frame + foto */
-    private fun showResult() {
-        resultBmp = createFramedResult(photos)
-        imgResult.setImageBitmap(resultBmp)
-    }
+        // Klik di area foto untuk retake bagian tertentu
+        imgResult.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN && resultBmp != null) {
+                val coords = mapTouchToImageCoords(imgResult, resultBmp!!, event.x, event.y)
+                val clickedSlot = rects.indexOfFirst { it.contains(coords.x.toInt(), coords.y.toInt()) }
 
-    /** 🔹 Dialog ganti foto per slot (Galeri) */
-    private fun showReplaceSlotDialog(slotIndex: Int) {
-        currentReplacingSlot = slotIndex
-        val title = if (slotIndex < photos.size && photos[slotIndex] != Uri.EMPTY)
-            "Ganti Foto Slot ke-${slotIndex + 1}"
-        else
-            "Isi Slot Kosong ke-${slotIndex + 1}"
-
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage("Apakah Anda ingin memilih foto baru untuk slot ini?")
-            .setPositiveButton("Ganti") { _, _ -> launchGalleryForSingleSlot() }
-            .setNegativeButton("Batal", null)
-            .show()
-    }
-
-    private val replaceSinglePhoto = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val imageUri: Uri? = result.data?.data
-            if (imageUri != null && currentReplacingSlot != -1) {
-                photos[currentReplacingSlot] = imageUri
-                showResult()
-                currentReplacingSlot = -1
-            } else {
-                Toast.makeText(this, "Gagal mengganti foto.", Toast.LENGTH_SHORT).show()
+                if (clickedSlot != -1) {
+                    showRetakeDialog(clickedSlot)
+                }
             }
+            true
         }
     }
 
-    private fun launchGalleryForSingleSlot() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-        }
-        replaceSinglePhoto.launch(intent)
-    }
-
-    /** 🔹 Membuat hasil akhir dengan foto + frame */
-    private fun createFramedResult(photos: ArrayList<Uri>): Bitmap {
-        val frameBmp = BitmapFactory.decodeResource(resources, frameResId)
+    /** 🔹 Membuat hasil akhir dengan 3 foto + frame */
+    private fun createFramedResult(photos: ArrayList<Uri>): Bitmap? {
+        val frameBmp = BitmapFactory.decodeResource(resources, FRAME_RES_ID)
         val frameW = frameBmp.width
         val frameH = frameBmp.height
 
@@ -162,61 +98,45 @@ class ResultActivity : AppCompatActivity() {
         rects.clear()
         rects.addAll(
             listOf(
-                Rect(
-                    (frameW * leftPct).toInt(), (frameH * startTop).toInt(),
-                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight)).toInt()
-                ),
-                Rect(
-                    (frameW * leftPct).toInt(),
-                    (frameH * (startTop + slotHeight + gap)).toInt(),
-                    (frameW * rightPct).toInt(),
-                    (frameH * (startTop + slotHeight * 2 + gap)).toInt()
-                ),
-                Rect(
-                    (frameW * leftPct).toInt(),
-                    (frameH * (startTop + slotHeight * 2 + gap * 2)).toInt(),
-                    (frameW * rightPct).toInt(),
-                    (frameH * (startTop + slotHeight * 3 + gap * 2)).toInt()
-                )
+                Rect((frameW * leftPct).toInt(), (frameH * startTop).toInt(),
+                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight)).toInt()),
+                Rect((frameW * leftPct).toInt(), (frameH * (startTop + slotHeight + gap)).toInt(),
+                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight * 2 + gap)).toInt()),
+                Rect((frameW * leftPct).toInt(), (frameH * (startTop + slotHeight * 2 + gap * 2)).toInt(),
+                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight * 3 + gap * 2)).toInt())
             )
         )
 
-        while (photos.size < MAX_SLOTS) photos.add(Uri.EMPTY)
-        val photosToProcess = photos.take(MAX_SLOTS)
+        val bitmaps = photos.take(3).mapNotNull { loadBitmapFromUri(it) }
+        if (bitmaps.size < 3) return null
 
         val result = Bitmap.createBitmap(frameW, frameH, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(result)
-
         val zooms = listOf(1.2f, 1.2f, 1.2f)
 
-        for (i in 0 until MAX_SLOTS) {
-            val photoUri = photosToProcess[i]
+        for (i in rects.indices) {
+            val src = bitmaps[i]
             val dst = rects[i]
-            if (photoUri != Uri.EMPTY) {
-                val src = loadBitmapFromUri(photoUri)
-                if (src != null) {
-                    val fitted =
-                        getCenterCroppedScaledBitmap(src, dst.width(), dst.height(), zooms[i])
-                    canvas.drawBitmap(fitted, dst.left.toFloat(), dst.top.toFloat(), null)
-                }
-            } else {
-                val emptyPaint = Paint().apply { color = Color.parseColor("#FFE4EA") }
-                canvas.drawRect(dst, emptyPaint)
-            }
+            val fitted = getCenterCroppedScaledBitmap(src, dst.width(), dst.height(), zooms[i])
+            canvas.drawBitmap(fitted, dst.left.toFloat(), dst.top.toFloat(), null)
         }
 
         canvas.drawBitmap(frameBmp, 0f, 0f, null)
         return result
     }
 
+    /** 🔹 Dialog pilih bagian foto yang mau diretake */
     private fun showChooseSlotDialog() {
         val items = arrayOf("Foto 1", "Foto 2", "Foto 3")
         AlertDialog.Builder(this)
             .setTitle("Pilih foto yang ingin di-retake")
-            .setItems(items) { _, which -> showRetakeDialog(which) }
+            .setItems(items) { _, which ->
+                showRetakeDialog(which)
+            }
             .show()
     }
 
+    /** 🔹 Dialog konfirmasi retake */
     private fun showRetakeDialog(slotIndex: Int) {
         AlertDialog.Builder(this)
             .setTitle("Retake Foto")
@@ -225,7 +145,6 @@ class ResultActivity : AppCompatActivity() {
                 val intent = Intent(this, CameraActivity::class.java)
                 intent.putExtra("slotIndex", slotIndex)
                 intent.putParcelableArrayListExtra("photos", photos)
-                intent.putExtra("FRAME_ID", frameResId) // pastikan frame diteruskan
                 startActivity(intent)
                 finish()
             }
@@ -233,6 +152,7 @@ class ResultActivity : AppCompatActivity() {
             .show()
     }
 
+    /** 🔹 Simpan hasil ke galeri */
     private fun saveImageToGallery(bitmap: Bitmap) {
         val filename = "PictABoo_${System.currentTimeMillis()}.jpg"
         val contentValues = ContentValues().apply {
@@ -244,26 +164,30 @@ class ResultActivity : AppCompatActivity() {
             }
         }
 
-        val uri =
-            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
         if (uri != null) {
-            contentResolver.openOutputStream(uri)
-                ?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+            contentResolver.openOutputStream(uri)?.use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            }
             Toast.makeText(this, "Berhasil disimpan ke galeri 🎉", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Gagal menyimpan foto", Toast.LENGTH_SHORT).show()
         }
     }
 
+    /** 🔹 Load bitmap dari Uri */
     private fun loadBitmapFromUri(uri: Uri): Bitmap? {
         return try {
-            contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it) }
+            contentResolver.openInputStream(uri)?.use { input ->
+                BitmapFactory.decodeStream(input)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
     }
 
+    /** 🔹 Crop & zoom foto agar pas dengan frame */
     private fun getCenterCroppedScaledBitmap(
         src: Bitmap,
         targetW: Int,
@@ -271,29 +195,30 @@ class ResultActivity : AppCompatActivity() {
         scaleMultiplier: Float = 1.0f
     ): Bitmap {
         if (src.width == 0 || src.height == 0) return src
-        val scale =
-            maxOf(targetW.toFloat() / src.width, targetH.toFloat() / src.height) * scaleMultiplier
+        val scale = maxOf(
+            targetW.toFloat() / src.width,
+            targetH.toFloat() / src.height
+        ) * scaleMultiplier
+
         val scaledW = (src.width * scale).toInt()
         val scaledH = (src.height * scale).toInt()
         val scaled = Bitmap.createScaledBitmap(src, scaledW, scaledH, true)
+
         val x = ((scaledW - targetW) / 2).coerceAtLeast(0)
         val y = ((scaledH - targetH) / 2).coerceAtLeast(0)
+
         return Bitmap.createBitmap(scaled, x, y, targetW, targetH)
     }
 
-    private fun mapTouchToImageCoords(
-        imageView: ImageView,
-        bitmap: Bitmap,
-        touchX: Float,
-        touchY: Float
-    ): PointF {
-        val matrixValues = FloatArray(9)
-        imageView.imageMatrix.getValues(matrixValues)
+    /** 🔹 Konversi titik sentuh ke koordinat di gambar sebenarnya */
+    private fun mapTouchToImageCoords(imageView: ImageView, bitmap: Bitmap, touchX: Float, touchY: Float): PointF {
+        val matrix = FloatArray(9)
+        imageView.imageMatrix.getValues(matrix)
 
-        val scaleX = matrixValues[Matrix.MSCALE_X]
-        val scaleY = matrixValues[Matrix.MSCALE_Y]
-        val transX = matrixValues[Matrix.MTRANS_X]
-        val transY = matrixValues[Matrix.MTRANS_Y]
+        val scaleX = matrix[Matrix.MSCALE_X]
+        val scaleY = matrix[Matrix.MSCALE_Y]
+        val transX = matrix[Matrix.MTRANS_X]
+        val transY = matrix[Matrix.MTRANS_Y]
 
         val actualX = (touchX - transX) / scaleX
         val actualY = (touchY - transY) / scaleY
