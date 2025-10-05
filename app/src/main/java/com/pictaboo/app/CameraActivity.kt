@@ -35,9 +35,11 @@ class CameraActivity : AppCompatActivity() {
 
     private var imageCapture: ImageCapture? = null
     private var lensFacing: Int = CameraSelector.LENS_FACING_BACK
+    private var cameraProvider: ProcessCameraProvider? = null
 
-    private val tempPhotoUris = mutableListOf<Uri>()
     private val MAX_PHOTOS = 3
+    private var slotIndex: Int? = null
+    private var existingPhotos = mutableListOf<Uri>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,70 +52,71 @@ class CameraActivity : AppCompatActivity() {
         layoutPreviewPhotos = findViewById(R.id.layoutPreviewPhotos)
         tvCountdown = findViewById(R.id.tvCountdown)
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            ActivityCompat.requestPermissions(
-                this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
-        }
+        // Ambil data dari intent
+        slotIndex = intent.getIntExtra("slotIndex", -1).takeIf { it != -1 }
+        existingPhotos = intent.getParcelableArrayListExtra("photos") ?: mutableListOf()
 
-        btnTakePhoto.setOnClickListener {
-            startTimerAndTakePhoto()
-        }
+        // Jalankan kamera
+        if (allPermissionsGranted()) startCamera()
+        else ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
 
+        btnTakePhoto.setOnClickListener { startTimerAndTakePhoto() }
         btnBack.setOnClickListener { finish() }
 
         btnSwitchCamera.setOnClickListener {
-            lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
-                CameraSelector.LENS_FACING_FRONT
-            } else {
-                CameraSelector.LENS_FACING_BACK
-            }
+            lensFacing =
+                if (lensFacing == CameraSelector.LENS_FACING_BACK)
+                    CameraSelector.LENS_FACING_FRONT
+                else
+                    CameraSelector.LENS_FACING_BACK
             startCamera()
         }
+
+        // Tampilkan preview kecil (kalau ada foto sebelumnya)
+        refreshPreviewPhotos()
     }
 
+    /** ================= KAMERA ================= */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
-            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder()
-                .setTargetRotation(viewFinder.display.rotation)
-                .build()
-                .also {
-                    it.setSurfaceProvider(viewFinder.surfaceProvider)
-                }
-
-            imageCapture = ImageCapture.Builder()
-                .setTargetRotation(viewFinder.display.rotation)
-                .build()
-
-            val cameraSelector = CameraSelector.Builder()
-                .requireLensFacing(lensFacing)
-                .build()
-
             try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
-                )
-            } catch (exc: Exception) {
+                cameraProvider = cameraProviderFuture.get()
+
+                val preview = Preview.Builder()
+                    .setTargetRotation(viewFinder.display.rotation)
+                    .build().also {
+                        it.setSurfaceProvider(viewFinder.surfaceProvider)
+                    }
+
+                imageCapture = ImageCapture.Builder()
+                    .setTargetRotation(viewFinder.display.rotation)
+                    .build()
+
+                val cameraSelector = CameraSelector.Builder()
+                    .requireLensFacing(lensFacing)
+                    .build()
+
+                cameraProvider?.unbindAll()
+                cameraProvider?.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+            } catch (e: Exception) {
                 Toast.makeText(this, "Gagal membuka kamera", Toast.LENGTH_SHORT).show()
             }
-
         }, ContextCompat.getMainExecutor(this))
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraProvider?.unbindAll()
+    }
+
+    /** ================= COUNTDOWN + FOTO ================= */
     private fun startTimerAndTakePhoto() {
         tvCountdown.visibility = android.view.View.VISIBLE
 
         object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val seconds = (millisUntilFinished / 1000) + 1
-                tvCountdown.text = seconds.toString()
+                tvCountdown.text = ((millisUntilFinished / 1000) + 1).toString()
             }
 
             override fun onFinish() {
@@ -125,12 +128,6 @@ class CameraActivity : AppCompatActivity() {
 
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
-
-        if (tempPhotoUris.size >= MAX_PHOTOS) {
-            Toast.makeText(this, "Maksimal $MAX_PHOTOS foto", Toast.LENGTH_SHORT).show()
-            return
-        }
-
         val photoFile = File(
             externalCacheDir,
             SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
@@ -149,41 +146,61 @@ class CameraActivity : AppCompatActivity() {
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val uri = Uri.fromFile(photoFile)
-                    tempPhotoUris.add(uri)
 
-                    val imageView = ImageView(this@CameraActivity)
-                    val params = LinearLayout.LayoutParams(200, 200)
-                    params.setMargins(8, 0, 8, 0)
-                    imageView.layoutParams = params
-                    imageView.scaleType = ImageView.ScaleType.CENTER_CROP
-                    imageView.setImageURI(uri)
-                    layoutPreviewPhotos.addView(imageView)
+                    // Mode RETAKE
+                    if (slotIndex != null && slotIndex!! in existingPhotos.indices) {
+                        existingPhotos[slotIndex!!] = uri
+                        goToResult()
+                        return
+                    }
 
-                    Toast.makeText(baseContext, "Foto ${tempPhotoUris.size} tersimpan", Toast.LENGTH_SHORT).show()
+                    // Mode NORMAL
+                    if (existingPhotos.size >= MAX_PHOTOS) {
+                        Toast.makeText(baseContext, "Maksimal $MAX_PHOTOS foto", Toast.LENGTH_SHORT).show()
+                        return
+                    }
 
-                    // kalau sudah 3 foto, buka page baru
-                    if (tempPhotoUris.size == MAX_PHOTOS) {
-                        val intent = Intent(this@CameraActivity, ResultActivity::class.java)
-                        intent.putParcelableArrayListExtra("photos", ArrayList(tempPhotoUris))
-                        startActivity(intent)
+                    existingPhotos.add(uri)
+                    refreshPreviewPhotos()
+
+                    // Jika sudah 3 foto → lanjut ke result
+                    if (existingPhotos.size == MAX_PHOTOS) {
+                        goToResult()
                     }
                 }
-            }
-        )
+            })
+    }
+
+    /** ================= UTIL ================= */
+    private fun refreshPreviewPhotos() {
+        layoutPreviewPhotos.removeAllViews()
+        for (photoUri in existingPhotos) {
+            val imageView = ImageView(this)
+            val params = LinearLayout.LayoutParams(200, 200)
+            params.setMargins(8, 0, 8, 0)
+            imageView.layoutParams = params
+            imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+            imageView.setImageURI(photoUri)
+            layoutPreviewPhotos.addView(imageView)
+        }
+    }
+
+    private fun goToResult() {
+        val intent = Intent(this@CameraActivity, ResultActivity::class.java)
+        intent.putParcelableArrayListExtra("photos", ArrayList(existingPhotos))
+        startActivity(intent)
+        finish()
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
+            if (allPermissionsGranted()) startCamera()
+            else {
                 Toast.makeText(this, "Permission tidak diberikan", Toast.LENGTH_SHORT).show()
                 finish()
             }

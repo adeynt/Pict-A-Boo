@@ -16,7 +16,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="50dp" />
+
+    <!-- Tombol Save (kanan atas) -->
+    <ImageButton
+        android:id="@+id/btnSave"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        android:src="@android:drawable/ic_menu_save"
+        app:tint="@color/purple_700"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="50dp"
+        android:contentDescription="Simpan Foto" />
 
     <!-- Preview Kamera -->
     <androidx.camera.view.PreviewView
@@ -29,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"
         app:layout_constraintDimensionRatio="4:3"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <!-- TextView Countdown -->
     <TextView
@@ -44,7 +58,7 @@
         app:layout_constraintBottom_toBottomOf="@id/viewFinder"
         app:layout_constraintStart_toStartOf="@id/viewFinder"
         app:layout_constraintEnd_toEndOf="@id/viewFinder"
-        android:fontFamily="sans-serif-black"/>
+        android:fontFamily="sans-serif-black" />
 
     <!-- Horizontal scroll untuk preview foto -->
     <HorizontalScrollView
@@ -60,7 +74,7 @@
             android:id="@+id/layoutPreviewPhotos"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal" />
     </HorizontalScrollView>
 
     <!-- Kontrol Kamera -->
@@ -89,7 +103,7 @@
             android:background="@android:color/transparent"
             android:src="@drawable/ic_switch_camera"
             app:tint="@color/purple_700"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

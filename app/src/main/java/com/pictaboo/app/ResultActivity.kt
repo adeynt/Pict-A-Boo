@@ -1,122 +1,185 @@
 package com.pictaboo.app
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Rect
+import android.app.AlertDialog
+import android.content.ContentValues
+import android.content.Intent
+import android.graphics.*
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.Toast
+import android.provider.MediaStore
+import android.view.MotionEvent
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import java.io.InputStream
+import java.io.OutputStream
 
 class ResultActivity : AppCompatActivity() {
 
     private lateinit var imgResult: ImageView
+    private lateinit var btnBack: ImageButton
+    private lateinit var btnRetake: Button
+    private lateinit var btnSave: Button
 
-    // Frame strip
     private val FRAME_RES_ID = R.drawable.my_frame
+    private val rects = mutableListOf<Rect>()
+    private var resultBmp: Bitmap? = null
+    private var photos: ArrayList<Uri> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
         imgResult = findViewById(R.id.imgResult)
+        btnBack = findViewById(R.id.btnBack)
+        btnRetake = findViewById(R.id.btnRetake)
+        btnSave = findViewById(R.id.btnSave)
 
-        val photos = intent.getParcelableArrayListExtra<Uri>("photos")
-        if (photos == null || photos.size < 3) {
-            Toast.makeText(this, "Butuh 3 foto untuk menempel ke strip", Toast.LENGTH_SHORT).show()
+        // Ambil foto dari intent
+        photos = intent.getParcelableArrayListExtra("photos") ?: arrayListOf()
+
+        // Kalau belum ada 3 foto, kembali ke kamera
+        if (photos.size < 3) {
+            Toast.makeText(this, "Butuh 3 foto untuk membuat strip.", Toast.LENGTH_SHORT).show()
+            finish()
             return
         }
 
-        // Load frame strip
+        // Gabungkan foto ke dalam frame
+        resultBmp = createFramedResult(photos)
+        if (resultBmp != null) {
+            imgResult.setImageBitmap(resultBmp)
+        } else {
+            Toast.makeText(this, "Gagal memuat hasil foto.", Toast.LENGTH_SHORT).show()
+        }
+
+        // Tombol Back
+        btnBack.setOnClickListener {
+            finish()
+        }
+
+        // Tombol Retake
+        btnRetake.setOnClickListener {
+            showChooseSlotDialog()
+        }
+
+        // Tombol Save
+        btnSave.setOnClickListener {
+            resultBmp?.let { bmp ->
+                saveImageToGallery(bmp)
+            } ?: Toast.makeText(this, "Gagal menyimpan, foto kosong.", Toast.LENGTH_SHORT).show()
+        }
+
+        // Klik di area foto untuk retake bagian tertentu
+        imgResult.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN && resultBmp != null) {
+                val coords = mapTouchToImageCoords(imgResult, resultBmp!!, event.x, event.y)
+                val clickedSlot = rects.indexOfFirst { it.contains(coords.x.toInt(), coords.y.toInt()) }
+
+                if (clickedSlot != -1) {
+                    showRetakeDialog(clickedSlot)
+                }
+            }
+            true
+        }
+    }
+
+    /** 🔹 Membuat hasil akhir dengan 3 foto + frame */
+    private fun createFramedResult(photos: ArrayList<Uri>): Bitmap? {
         val frameBmp = BitmapFactory.decodeResource(resources, FRAME_RES_ID)
-        if (frameBmp == null) {
-            Toast.makeText(this, "Gagal load frame", Toast.LENGTH_SHORT).show()
-            return
-        }
+        val frameW = frameBmp.width
+        val frameH = frameBmp.height
 
-        val w = frameBmp.width
-        val h = frameBmp.height
-
-        // Persentase area slot
         val leftPct = 0.05f
         val rightPct = 0.96f
+        val slotHeight = 0.27f
+        val gap = 0.026f
+        val startTop = 0.02f
 
-        val slotHeight = 0.27f   // tinggi tiap foto = 27%
-        val gap = 0.026f         // jarak antar foto = 2.6%
-        val startTop = 0.02f     // margin atas (4%)
-
-        val top1TopPct = startTop
-        val top1BottomPct = top1TopPct + slotHeight
-
-        val top2TopPct = top1BottomPct + gap
-        val top2BottomPct = top2TopPct + slotHeight
-
-        val top3TopPct = top2BottomPct + gap
-        val top3BottomPct = top3TopPct + slotHeight
-
-
-        val rectTop = Rect(
-            (w * leftPct).toInt(),
-            (h * top1TopPct).toInt(),
-            (w * rightPct).toInt(),
-            (h * top1BottomPct).toInt()
+        rects.clear()
+        rects.addAll(
+            listOf(
+                Rect((frameW * leftPct).toInt(), (frameH * startTop).toInt(),
+                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight)).toInt()),
+                Rect((frameW * leftPct).toInt(), (frameH * (startTop + slotHeight + gap)).toInt(),
+                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight * 2 + gap)).toInt()),
+                Rect((frameW * leftPct).toInt(), (frameH * (startTop + slotHeight * 2 + gap * 2)).toInt(),
+                    (frameW * rightPct).toInt(), (frameH * (startTop + slotHeight * 3 + gap * 2)).toInt())
+            )
         )
 
-        val rectMiddle = Rect(
-            (w * leftPct).toInt(),
-            (h * top2TopPct).toInt(),
-            (w * rightPct).toInt(),
-            (h * top2BottomPct).toInt()
-        )
+        val bitmaps = photos.take(3).mapNotNull { loadBitmapFromUri(it) }
+        if (bitmaps.size < 3) return null
 
-        val rectBottom = Rect(
-            (w * leftPct).toInt(),
-            (h * top3TopPct).toInt(),
-            (w * rightPct).toInt(),
-            (h * top3BottomPct).toInt()
-        )
-
-        // Load foto
-        val bitmaps = mutableListOf<Bitmap>()
-        photos.take(3).forEach { uri ->
-            loadBitmapFromUri(uri)?.let { bitmaps.add(it) }
-        }
-
-        if (bitmaps.size < 3) {
-            Toast.makeText(this, "Gagal memuat beberapa foto", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Buat bitmap hasil
-        val resultBmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(resultBmp)
-
-        val dstRects = listOf(rectTop, rectMiddle, rectBottom)
-
-        // Bisa atur zoom tiap slot kalau mau beda (misalnya 1.2f, 1.1f, dst)
+        val result = Bitmap.createBitmap(frameW, frameH, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(result)
         val zooms = listOf(1.2f, 1.2f, 1.2f)
 
-        for (i in 0..2) {
+        for (i in rects.indices) {
             val src = bitmaps[i]
-            val dst = dstRects[i]
+            val dst = rects[i]
             val fitted = getCenterCroppedScaledBitmap(src, dst.width(), dst.height(), zooms[i])
             canvas.drawBitmap(fitted, dst.left.toFloat(), dst.top.toFloat(), null)
         }
 
-        // Gambar frame di atas
         canvas.drawBitmap(frameBmp, 0f, 0f, null)
-
-        imgResult.setImageBitmap(resultBmp)
+        return result
     }
 
+    /** 🔹 Dialog pilih bagian foto yang mau diretake */
+    private fun showChooseSlotDialog() {
+        val items = arrayOf("Foto 1", "Foto 2", "Foto 3")
+        AlertDialog.Builder(this)
+            .setTitle("Pilih foto yang ingin di-retake")
+            .setItems(items) { _, which ->
+                showRetakeDialog(which)
+            }
+            .show()
+    }
+
+    /** 🔹 Dialog konfirmasi retake */
+    private fun showRetakeDialog(slotIndex: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("Retake Foto")
+            .setMessage("Ambil ulang foto ke-${slotIndex + 1}?")
+            .setPositiveButton("Ya") { _, _ ->
+                val intent = Intent(this, CameraActivity::class.java)
+                intent.putExtra("slotIndex", slotIndex)
+                intent.putParcelableArrayListExtra("photos", photos)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("Batal", null)
+            .show()
+    }
+
+    /** 🔹 Simpan hasil ke galeri */
+    private fun saveImageToGallery(bitmap: Bitmap) {
+        val filename = "PictABoo_${System.currentTimeMillis()}.jpg"
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PictABoo")
+            }
+        }
+
+        val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        if (uri != null) {
+            contentResolver.openOutputStream(uri)?.use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            }
+            Toast.makeText(this, "Berhasil disimpan ke galeri 🎉", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this, "Gagal menyimpan foto", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /** 🔹 Load bitmap dari Uri */
     private fun loadBitmapFromUri(uri: Uri): Bitmap? {
         return try {
-            val input: InputStream? = contentResolver.openInputStream(uri)
-            input.use {
-                BitmapFactory.decodeStream(it)
+            contentResolver.openInputStream(uri)?.use { input ->
+                BitmapFactory.decodeStream(input)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -124,29 +187,42 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    // scale + center-crop, dengan zoom tambahan
+    /** 🔹 Crop & zoom foto agar pas dengan frame */
     private fun getCenterCroppedScaledBitmap(
         src: Bitmap,
         targetW: Int,
         targetH: Int,
         scaleMultiplier: Float = 1.0f
     ): Bitmap {
-        val srcW = src.width
-        val srcH = src.height
-        if (srcW == 0 || srcH == 0) return src
-
-        val scale = Math.max(
-            targetW.toFloat() / srcW.toFloat(),
-            targetH.toFloat() / srcH.toFloat()
+        if (src.width == 0 || src.height == 0) return src
+        val scale = maxOf(
+            targetW.toFloat() / src.width,
+            targetH.toFloat() / src.height
         ) * scaleMultiplier
 
-        val scaledW = (srcW * scale).toInt()
-        val scaledH = (srcH * scale).toInt()
-
+        val scaledW = (src.width * scale).toInt()
+        val scaledH = (src.height * scale).toInt()
         val scaled = Bitmap.createScaledBitmap(src, scaledW, scaledH, true)
 
-        val x = (scaledW - targetW) / 2
-        val y = (scaledH - targetH) / 2
-        return Bitmap.createBitmap(scaled, x.coerceAtLeast(0), y.coerceAtLeast(0), targetW, targetH)
+        val x = ((scaledW - targetW) / 2).coerceAtLeast(0)
+        val y = ((scaledH - targetH) / 2).coerceAtLeast(0)
+
+        return Bitmap.createBitmap(scaled, x, y, targetW, targetH)
+    }
+
+    /** 🔹 Konversi titik sentuh ke koordinat di gambar sebenarnya */
+    private fun mapTouchToImageCoords(imageView: ImageView, bitmap: Bitmap, touchX: Float, touchY: Float): PointF {
+        val matrix = FloatArray(9)
+        imageView.imageMatrix.getValues(matrix)
+
+        val scaleX = matrix[Matrix.MSCALE_X]
+        val scaleY = matrix[Matrix.MSCALE_Y]
+        val transX = matrix[Matrix.MTRANS_X]
+        val transY = matrix[Matrix.MTRANS_Y]
+
+        val actualX = (touchX - transX) / scaleX
+        val actualY = (touchY - transY) / scaleY
+
+        return PointF(actualX, actualY)
     }
 }
