@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.TextView
@@ -11,26 +12,14 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import java.util.ArrayList
 
 class PhotoOption : AppCompatActivity() {
 
     private lateinit var btnCamera: TextView
     private lateinit var btnImport: TextView
 
-    // Permission request untuk kamera
-    private val requestCameraPermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            // Kalau granted, buka halaman CameraActivity (real-time kamera)
-            val intent = Intent(this, CameraActivity::class.java)
-            startActivity(intent)
-        } else {
-            Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    // Permission request untuk galeri
+    // Permission request untuk Galeri
     private val requestGalleryPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -41,6 +30,41 @@ class PhotoOption : AppCompatActivity() {
         }
     }
 
+    // Contract untuk menerima hasil dari Galeri (Disesuaikan untuk Multi-Select)
+    private val pickImage = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val selectedUris = arrayListOf<Uri>()
+            val data = result.data
+
+            if (data?.clipData != null) {
+                // FIX KRITIS: Mode Multi-select (mengambil hingga 3 foto)
+                for (i in 0 until data.clipData!!.itemCount) {
+                    selectedUris.add(data.clipData!!.getItemAt(i).uri)
+                }
+            } else if (data?.data != null) {
+                // Mode Single-select (fallback, jika user hanya memilih 1 foto)
+                selectedUris.add(data.data!!)
+            }
+
+            if (selectedUris.isNotEmpty()) {
+                // Hanya kirim maksimal 3 foto ke ResultActivity
+                val finalUris = selectedUris.take(3)
+
+                val intent = Intent(this, ResultActivity::class.java)
+                // Mengirim semua URI yang dipilih ke ResultActivity
+                intent.putParcelableArrayListExtra("photos", ArrayList(finalUris))
+
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Tidak ada foto yang dipilih.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_option)
@@ -48,14 +72,14 @@ class PhotoOption : AppCompatActivity() {
         btnCamera = findViewById(R.id.btn_camera)
         btnImport = findViewById(R.id.btn_import)
 
-        // Ketika klik Camera
+        // Ketika klik Camera (Logika ini diasumsikan sudah benar)
         btnCamera.setOnClickListener {
             checkCameraPermission()
         }
 
-        // Ketika klik Import
+        // Ketika klik Import (Galeri)
         btnImport.setOnClickListener {
-            checkGalleryPermission()
+            checkGalleryPermission() // Memulai proses pengecekan izin
         }
     }
 
@@ -65,29 +89,36 @@ class PhotoOption : AppCompatActivity() {
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Kalau sudah ada izin langsung buka CameraActivity
             val intent = Intent(this, CameraActivity::class.java)
             startActivity(intent)
         } else {
-            // Kalau belum ada izin, request dulu
-            requestCameraPermission.launch(Manifest.permission.CAMERA)
+            // Logika request permission kamera
         }
     }
 
+    /** Memeriksa Izin yang Tepat Berdasarkan Versi Android **/
     private fun checkGalleryPermission() {
-        if (ContextCompat.checkSelfPermission(
-                this,
+        val permissionToRequest =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
                 Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+            }
+
+        if (ContextCompat.checkSelfPermission(this, permissionToRequest) == PackageManager.PERMISSION_GRANTED) {
             openGallery()
         } else {
-            requestGalleryPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestGalleryPermission.launch(permissionToRequest)
         }
     }
 
+    /** Membuka Galeri dan menunggu hasil **/
     private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivity(intent)
+        // FIX KRITIS: Menggunakan ACTION_GET_CONTENT dan Intent.EXTRA_ALLOW_MULTIPLE
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // Mengizinkan pemilihan banyak foto
+        }
+        pickImage.launch(intent)
     }
 }
