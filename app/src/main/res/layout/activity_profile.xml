@@ -34,27 +34,17 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@id/btn_back"
+            android:layout_alignParentEnd="true"
             android:layout_marginStart="16dp">
 
             <ImageView
-                android:layout_width="77dp"
+                android:layout_width="120dp"
                 android:layout_height="50dp"
                 android:contentDescription="@string/app_name"
                 android:scaleType="fitCenter"
                 android:src="@drawable/logo_pictabook" />
-
-            <TextView
-                android:id="@+id/nama_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/app_name"
-                android:textStyle="bold"
-                android:textSize="26sp"
-                android:textColor="#BA2234" />
         </LinearLayout>
     </RelativeLayout>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -117,6 +107,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:textSize="18sp"
+                    android:onClick="editProfile"
                     android:background="@drawable/btn_pink"
                     app:backgroundTint="@null"
                     android:layout_marginBottom="32dp"/>
@@ -138,13 +129,19 @@
                     android:id="@+id/menuMyPhotos"
                     style="@style/ProfileMenuItem"
                     android:text="My Photos"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="goToMyPhotos"
                     app:drawableStartCompat="@drawable/ic_gallery"
                     app:drawableTint="@color/baru" />
 
                 <TextView
                     android:id="@+id/menuHelp"
                     style="@style/ProfileMenuItem"
-                    android:text="Help"
+                    android:text="Help/FAQ"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="goToFaq"
                     app:drawableStartCompat="@drawable/ic_email"
                     app:drawableTint="@color/baru" />
 
@@ -152,6 +149,9 @@
                     android:id="@+id/menuAboutApp"
                     style="@style/ProfileMenuItem"
                     android:text="About App"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="goToAboutApp"
                     app:drawableStartCompat="@drawable/ic_projects"
                     app:drawableTint="@color/baru" />
 
@@ -159,6 +159,9 @@
                     android:id="@+id/menuLogout"
                     style="@style/ProfileMenuItem"
                     android:text="Logout"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="logout"
                     app:drawableStartCompat="@drawable/ic_lock"
                     app:drawableTint="@color/baru"
                     android:textColor="@color/baru" />
@@ -166,59 +169,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-    <LinearLayout
-        android:id="@+id/bottom_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/homeicon"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Home"
-            android:textColor="@color/baru" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_frame"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Frame"
-            android:textColor="@color/baru" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_projects"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Projects"
-            android:textColor="@color/baru" />
-
-        <TextView
-            android:id="@+id/nav_profile"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_user"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Profile"
-            android:textColor="@color/baru"
-            android:textStyle="bold"/>
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
