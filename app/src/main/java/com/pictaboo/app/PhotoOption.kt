@@ -19,6 +19,8 @@ class PhotoOption : AppCompatActivity() {
     private lateinit var btnCamera: TextView
     private lateinit var btnImport: TextView
 
+    private var frameId: Int = 0 // Tambahkan variabel untuk menampung frame
+
     // Permission request untuk Galeri
     private val requestGalleryPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -30,7 +32,7 @@ class PhotoOption : AppCompatActivity() {
         }
     }
 
-    // Contract untuk menerima hasil dari Galeri (Disesuaikan untuk Multi-Select)
+    // Contract untuk menerima hasil dari Galeri
     private val pickImage = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -39,23 +41,19 @@ class PhotoOption : AppCompatActivity() {
             val data = result.data
 
             if (data?.clipData != null) {
-                // FIX KRITIS: Mode Multi-select (mengambil hingga 3 foto)
                 for (i in 0 until data.clipData!!.itemCount) {
                     selectedUris.add(data.clipData!!.getItemAt(i).uri)
                 }
             } else if (data?.data != null) {
-                // Mode Single-select (fallback, jika user hanya memilih 1 foto)
                 selectedUris.add(data.data!!)
             }
 
             if (selectedUris.isNotEmpty()) {
-                // Hanya kirim maksimal 3 foto ke ResultActivity
                 val finalUris = selectedUris.take(3)
 
                 val intent = Intent(this, ResultActivity::class.java)
-                // Mengirim semua URI yang dipilih ke ResultActivity
                 intent.putParcelableArrayListExtra("photos", ArrayList(finalUris))
-
+                intent.putExtra("FRAME_ID", frameId) // kirim frame id ke ResultActivity
                 startActivity(intent)
                 finish()
             } else {
@@ -64,22 +62,22 @@ class PhotoOption : AppCompatActivity() {
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_option)
 
+        // Ambil FRAME_ID dari PreviewFrame
+        frameId = intent.getIntExtra("FRAME_ID", 0)
+
         btnCamera = findViewById(R.id.btn_camera)
         btnImport = findViewById(R.id.btn_import)
 
-        // Ketika klik Camera (Logika ini diasumsikan sudah benar)
         btnCamera.setOnClickListener {
             checkCameraPermission()
         }
 
-        // Ketika klik Import (Galeri)
         btnImport.setOnClickListener {
-            checkGalleryPermission() // Memulai proses pengecekan izin
+            checkGalleryPermission()
         }
     }
 
@@ -90,13 +88,13 @@ class PhotoOption : AppCompatActivity() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             val intent = Intent(this, CameraActivity::class.java)
+            intent.putExtra("FRAME_ID", frameId) // kirim frame ke CameraActivity juga
             startActivity(intent)
         } else {
-            // Logika request permission kamera
+            // request permission kamera (kalau belum)
         }
     }
 
-    /** Memeriksa Izin yang Tepat Berdasarkan Versi Android **/
     private fun checkGalleryPermission() {
         val permissionToRequest =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -105,19 +103,19 @@ class PhotoOption : AppCompatActivity() {
                 Manifest.permission.READ_EXTERNAL_STORAGE
             }
 
-        if (ContextCompat.checkSelfPermission(this, permissionToRequest) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, permissionToRequest)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
             openGallery()
         } else {
             requestGalleryPermission.launch(permissionToRequest)
         }
     }
 
-    /** Membuka Galeri dan menunggu hasil **/
     private fun openGallery() {
-        // FIX KRITIS: Menggunakan ACTION_GET_CONTENT dan Intent.EXTRA_ALLOW_MULTIPLE
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "image/*"
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) // Mengizinkan pemilihan banyak foto
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         }
         pickImage.launch(intent)
     }

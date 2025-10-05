@@ -30,6 +30,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var btnTakePhoto: ImageButton
     private lateinit var btnBack: ImageButton
     private lateinit var btnSwitchCamera: ImageButton
+    private lateinit var btnToggleTimer: ImageButton
     private lateinit var layoutPreviewPhotos: LinearLayout
     private lateinit var tvCountdown: TextView
 
@@ -41,6 +42,9 @@ class CameraActivity : AppCompatActivity() {
     private var slotIndex: Int? = null
     private var existingPhotos = mutableListOf<Uri>()
 
+    private var frameResId: Int = R.drawable.my_frame // frame yang dipilih
+    private var isTimerEnabled = true // default timer aktif
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
@@ -49,18 +53,25 @@ class CameraActivity : AppCompatActivity() {
         btnTakePhoto = findViewById(R.id.btnTakePhoto)
         btnBack = findViewById(R.id.btnBack)
         btnSwitchCamera = findViewById(R.id.btnSwitchCamera)
+        btnToggleTimer = findViewById(R.id.btnToggleTimer)
         layoutPreviewPhotos = findViewById(R.id.layoutPreviewPhotos)
         tvCountdown = findViewById(R.id.tvCountdown)
 
         // Ambil data dari intent
         slotIndex = intent.getIntExtra("slotIndex", -1).takeIf { it != -1 }
         existingPhotos = intent.getParcelableArrayListExtra("photos") ?: mutableListOf()
+        frameResId = intent.getIntExtra("FRAME_ID", R.drawable.my_frame)
 
         // Jalankan kamera
         if (allPermissionsGranted()) startCamera()
         else ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
 
-        btnTakePhoto.setOnClickListener { startTimerAndTakePhoto() }
+        // Tombol capture
+        btnTakePhoto.setOnClickListener {
+            if (isTimerEnabled) startTimerAndTakePhoto()
+            else takePhoto()
+        }
+
         btnBack.setOnClickListener { finish() }
 
         btnSwitchCamera.setOnClickListener {
@@ -72,11 +83,16 @@ class CameraActivity : AppCompatActivity() {
             startCamera()
         }
 
-        // Tampilkan preview kecil (kalau ada foto sebelumnya)
-        refreshPreviewPhotos()
+        btnToggleTimer.setOnClickListener {
+            isTimerEnabled = !isTimerEnabled
+            updateTimerButton()
+        }
+
+        updateTimerButton() // set icon awal
+        refreshPreviewPhotos() // tampilkan preview
     }
 
-    /** ================= KAMERA ================= */
+    /** ================= CAMERA ================= */
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
@@ -85,9 +101,8 @@ class CameraActivity : AppCompatActivity() {
 
                 val preview = Preview.Builder()
                     .setTargetRotation(viewFinder.display.rotation)
-                    .build().also {
-                        it.setSurfaceProvider(viewFinder.surfaceProvider)
-                    }
+                    .build()
+                    .also { it.setSurfaceProvider(viewFinder.surfaceProvider) }
 
                 imageCapture = ImageCapture.Builder()
                     .setTargetRotation(viewFinder.display.rotation)
@@ -113,7 +128,6 @@ class CameraActivity : AppCompatActivity() {
     /** ================= COUNTDOWN + FOTO ================= */
     private fun startTimerAndTakePhoto() {
         tvCountdown.visibility = android.view.View.VISIBLE
-
         object : CountDownTimer(3000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 tvCountdown.text = ((millisUntilFinished / 1000) + 1).toString()
@@ -133,7 +147,6 @@ class CameraActivity : AppCompatActivity() {
             SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US)
                 .format(System.currentTimeMillis()) + ".jpg"
         )
-
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
         imageCapture.takePicture(
@@ -147,14 +160,14 @@ class CameraActivity : AppCompatActivity() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val uri = Uri.fromFile(photoFile)
 
-                    // Mode RETAKE
+                    // RETAKE
                     if (slotIndex != null && slotIndex!! in existingPhotos.indices) {
                         existingPhotos[slotIndex!!] = uri
                         goToResult()
                         return
                     }
 
-                    // Mode NORMAL
+                    // NORMAL
                     if (existingPhotos.size >= MAX_PHOTOS) {
                         Toast.makeText(baseContext, "Maksimal $MAX_PHOTOS foto", Toast.LENGTH_SHORT).show()
                         return
@@ -188,8 +201,14 @@ class CameraActivity : AppCompatActivity() {
     private fun goToResult() {
         val intent = Intent(this@CameraActivity, ResultActivity::class.java)
         intent.putParcelableArrayListExtra("photos", ArrayList(existingPhotos))
+        intent.putExtra("FRAME_ID", frameResId)
         startActivity(intent)
         finish()
+    }
+
+    private fun updateTimerButton() {
+        if (isTimerEnabled) btnToggleTimer.setImageResource(R.drawable.ic_timer_on)
+        else btnToggleTimer.setImageResource(R.drawable.ic_timer_off)
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
