@@ -5,24 +5,31 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collect
+
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+// IMPOR FIREBASE DATA DIHAPUS
 
 class ProjectsActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var photoAdapter: PhotoAdapter // Deklarasi variabel Adapter
+    private lateinit var photoAdapter: PhotoAdapter
 
-    // Inisialisasi Firebase
+    // Inisialisasi Firebase (Hanya Auth)
     private val auth = FirebaseAuth.getInstance()
-    private val db = FirebaseFirestore.getInstance()
+
+    // Inisialisasi Room DAO
+    private val photoDao by lazy {
+        AppDatabase.getDatabase(this).photoDao()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_projects) // Asumsi nama layout ini
+        setContentView(R.layout.activity_projects)
 
-        recyclerView = findViewById(R.id.rv_photos) // Asumsi ID RecyclerView ini
+        recyclerView = findViewById(R.id.rv_photos)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         if (auth.currentUser == null) {
@@ -31,33 +38,28 @@ class ProjectsActivity : AppCompatActivity() {
             return
         }
 
-        fetchUserPhotos()
+        fetchUserPhotosFromRoom() // Mengambil data dari Room
     }
 
-    /** 🔹 Mengambil daftar foto dari Firestore untuk user yang sedang login */
-    private fun fetchUserPhotos() {
-        val currentUserId = auth.currentUser!!.uid
+    /** 🔹 Mengambil daftar foto dari Room untuk user yang sedang login */
+    private fun fetchUserPhotosFromRoom() {
+        val currentUserId = auth.currentUser?.uid ?: return
 
-        db.collection("photos")
-            .whereEqualTo("userId", currentUserId)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { result ->
-                // Mapping dokumen Firestore ke PhotoModel
-                val photoList = result.documents.map { document ->
-                    document.toObject(PhotoModel::class.java)!!.copy(id = document.id)
+        // Menggunakan Flow dari Room untuk mendapatkan update data secara real-time
+        lifecycleScope.launch {
+            photoDao.getUserPhotos(currentUserId).collect { photoList ->
+                // Inisialisasi atau update adapter
+                if (!::photoAdapter.isInitialized) {
+                    photoAdapter = PhotoAdapter(photoList)
+                    recyclerView.adapter = photoAdapter
+                } else {
+                    photoAdapter.updateData(photoList)
                 }
-
-                // LANGKAH 2: Hubungkan (Inisialisasi Adapter dan set ke RecyclerView)
-                photoAdapter = PhotoAdapter(photoList) // FIX: Hanya 1 parameter
-                recyclerView.adapter = photoAdapter
 
                 if (photoList.isEmpty()) {
-                    Toast.makeText(this, "Anda belum punya foto di Projects.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProjectsActivity, "Anda belum punya foto di Projects.", Toast.LENGTH_SHORT).show()
                 }
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Gagal mengambil data: ${e.message}", Toast.LENGTH_LONG).show()
-            }
+        }
     }
 }

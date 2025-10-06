@@ -1,13 +1,17 @@
 package com.pictaboo.app
 
-import com.google.firebase.Timestamp
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.Date
 
 /**
- * Model data untuk menyimpan metadata foto yang diambil dari Firestore.
+ * Model data untuk menyimpan metadata foto, diimplementasikan sebagai Room Entity.
  */
+@Entity(tableName = "photos")
 data class PhotoModel(
-    val id: String = "",
-    val userId: String = "",
-    val url: String = "",
-    val timestamp: Timestamp = Timestamp.now()
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val localUserId: String = "", // INI KOLOM YANG DICARI
+    val localUri: String = "",
+    val timestamp: Date = Date()
 )

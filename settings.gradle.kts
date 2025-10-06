@@ -14,11 +14,10 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
+        google() // <-- Add this line
         mavenCentral()
     }
 }
 
 rootProject.name = "Pict A Boo"
 include(":app")
- 
