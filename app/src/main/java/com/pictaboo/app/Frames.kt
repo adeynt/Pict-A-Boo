@@ -61,6 +61,14 @@ class Frames : AppCompatActivity() {
         navFrame.setOnClickListener {
             startActivity(Intent(this, Frames::class.java))
         }
+
+        val navProject = findViewById<TextView>(R.id.nav_project)
+
+        navProject.setOnClickListener {
+            // Mengarah ke halaman daftar proyek lokal
+            startActivity(Intent(this, ProjectsActivity::class.java))
+        }
+
     }
 
 }

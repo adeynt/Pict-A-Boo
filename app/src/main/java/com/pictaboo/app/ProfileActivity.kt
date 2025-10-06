@@ -41,6 +41,31 @@ class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogLi
         }
 
         loadProfileData()
+
+        val navProfile = findViewById<TextView>(R.id.nav_profile)
+
+        navProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
+        val navHome = findViewById<TextView>(R.id.nav_home)
+
+        navHome.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        val navFrame = findViewById<TextView>(R.id.nav_frame)
+
+        navFrame.setOnClickListener {
+            startActivity(Intent(this, Frames::class.java))
+        }
+
+        val navProject = findViewById<TextView>(R.id.nav_project)
+
+        navProject.setOnClickListener {
+            // Mengarah ke halaman daftar proyek lokal
+            startActivity(Intent(this, ProjectsActivity::class.java))
+        }
     }
 
     private fun loadProfileData() {

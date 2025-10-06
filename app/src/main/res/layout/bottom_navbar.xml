@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="26dp">
+
+        <!-- Isi TextViews nav_home, nav_frame, dst -->
+        <TextView
+            android:id="@+id/nav_home"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/homeicon"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Home"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:id="@+id/nav_frame"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_frame"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Frame"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:id="@+id/nav_project"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_projects"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Projects"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:id="@+id/nav_profile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_user"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Profile"
+            android:textColor="@color/baru" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

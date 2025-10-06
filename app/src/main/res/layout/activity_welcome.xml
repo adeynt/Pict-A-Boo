@@ -13,7 +13,8 @@
         android:src="@drawable/logo_pictabook"
         android:contentDescription="Logo Pict-A-Boo"
         android:layout_gravity="start|top"
-        android:layout_margin="26dp"/>
+        android:layout_margin="26dp"
+        android:paddingTop="16dp"/>
 
     <!-- Konten utama di tengah -->
     <LinearLayout

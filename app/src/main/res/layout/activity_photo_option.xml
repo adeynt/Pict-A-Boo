@@ -15,7 +15,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
@@ -148,56 +148,9 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <LinearLayout
-        android:id="@+id/bottom_nav_bar"
+    <include layout="@layout/bottom_navbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingTop="8dp"
-        android:paddingBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-
-    <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/homeicon"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Home"
-            android:textColor="@color/baru" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_frame"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Frame"
-            android:textColor="@color/baru" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_projects"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Projects"
-            android:textColor="@color/baru" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableTop="@drawable/ic_user"
-            android:drawableTint="@color/baru"
-            android:gravity="center_horizontal"
-            android:text="Profile"
-            android:textColor="@color/baru" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

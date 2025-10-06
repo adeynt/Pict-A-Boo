@@ -1,9 +1,12 @@
 package com.pictaboo.app
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.pictaboo.app.AppDatabase
@@ -26,7 +29,7 @@ class ProjectsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_projects)
 
         recyclerView = findViewById(R.id.rv_photos)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = GridLayoutManager(this, 3)
 
         // Ambil user_id dari SharedPreferences
         val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
@@ -39,6 +42,31 @@ class ProjectsActivity : AppCompatActivity() {
         }
 
         fetchUserPhotosFromRoom()
+
+        val navProfile = findViewById<TextView>(R.id.nav_profile)
+
+        navProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
+        val navHome = findViewById<TextView>(R.id.nav_home)
+
+        navHome.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        val navFrame = findViewById<TextView>(R.id.nav_frame)
+
+        navFrame.setOnClickListener {
+            startActivity(Intent(this, Frames::class.java))
+        }
+
+        val navProject = findViewById<TextView>(R.id.nav_project)
+
+        navProject.setOnClickListener {
+            // Mengarah ke halaman daftar proyek lokal
+            startActivity(Intent(this, ProjectsActivity::class.java))
+        }
     }
 
     /** 🔹 Mengambil daftar foto dari Room untuk user yang sedang login */
