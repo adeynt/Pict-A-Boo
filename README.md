@@ -1,6 +1,19 @@
 # Pict A Boo: Fun Photo Booth App 📸
 
-<img src="https://github.com/adeynt/Pict-A-Boo/raw/main/app/src/main/res/drawable/logo_pictabook.png" alt="App Logo" width="300px" />
+<img src="https://github.com/adeynt/Pict-A-Boo/raw/main/app/src/main/res/drawable/logo_pictabook.png" alt="App Logo" width="200px" />
+
+## 👥 Kelompok & Informasi Proyek
+
+| Keterangan | Detail |
+| :--- | :--- |
+| **Mata Kuliah** | Pemrograman Mobile |
+| **Jurusan** | Informatika |
+| **Universitas** | Universitas Jenderal Soedirman |
+| **Anggota** | Adeyunita Rachmadhani (NIM: H1D023057) |
+| | Ibna Oktavia Saputri (NIM: H1D023064) |
+| | Natalia Nidya Fidelia (NIM: H1D023099) |
+
+---
 
 Pict A Boo adalah aplikasi *Photo Booth* bergaya fun dan unik yang dikembangkan untuk platform Android. Aplikasi ini memungkinkan pengguna menangkap beberapa foto dan menggabungkannya ke dalam satu *photo strip* yang menarik dengan berbagai pilihan *frame* dekoratif. Aplikasi ini mendukung autentikasi pengguna lokal dan penyimpanan proyek ke galeri perangkat.
 
@@ -17,7 +30,7 @@ Aplikasi ini menyertakan fitur-fitur berikut:
 * **Koleksi Frame:** Menyediakan berbagai pilihan *frame* foto yang lucu dan *stylish*.
 * **Penyimpanan Lokal (Projects):** Foto hasil akhir disimpan ke Galeri perangkat, dan metadata proyek (URI) dilacak menggunakan Room Database.
 
-<img src="https://github.com/adeynt/Pict-A-Boo/raw/main/app/src/main/res/drawable/welcome_img.png" alt="Welcome Image Illustration" width="300px" />
+<img src="https://github.com/adeynt/Pict-A-Boo/raw/main/app/src/main/res/drawable/welcome_img.png" alt="Welcome Image Illustration" width="400px" />
 
 ---
 
@@ -45,16 +58,16 @@ Untuk menjalankan proyek ini secara lokal, Anda memerlukan lingkungan pengembang
 
 ### Langkah Instalasi
 
-1.  **Clone Repositori:**
-    ```bash
-    git clone [https://github.com/adeynt/Pict-A-Boo.git](https://github.com/adeynt/Pict-A-Boo.git)
-    ```
+1.  **Clone Repositori:**
+    ```bash
+    git clone [https://github.com/adeynt/Pict-A-Boo.git](https://github.com/adeynt/Pict-A-Boo.git)
+    ```
 
-2.  **Buka di Android Studio:**
-    Buka folder proyek di Android Studio dan tunggu hingga Gradle selesai menyinkronkan dependensi.
+2.  **Buka di Android Studio:**
+    Buka folder proyek di Android Studio dan tunggu hingga Gradle selesai menyinkronkan dependensi.
 
-3.  **Jalankan Aplikasi:**
-    Pilih perangkat fisik atau emulator (Android 7.0 / API 24 atau lebih tinggi) dan jalankan aplikasi. Aplikasi akan meminta izin kamera dan penyimpanan saat pertama kali dibuka.
+3.  **Jalankan Aplikasi:**
+    Pilih perangkat fisik atau emulator (Android 7.0 / API 24 atau lebih tinggi) dan jalankan aplikasi. Aplikasi akan meminta izin kamera dan penyimpanan saat pertama kali dibuka.
 
 ### Ilustrasi Frame
 
