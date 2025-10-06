@@ -7,17 +7,43 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth // Tambahkan import
-import android.util.Log // Tambahkan import
+import com.google.firebase.auth.FirebaseAuth
+import android.util.Log
+import com.google.android.gms.security.ProviderInstaller // IMPORT WAJIB
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth // Deklarasi instance Firebase Auth
 
+    // CATATAN: Variabel UI kini dideklarasikan sebagai 'val' di dalam setupLogic()
+    // untuk menghindari masalah lateinit / NullPointerException di luar onCreate.
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // ** START: FIX CRASH (Provider Installer) **
+        ProviderInstaller.installIfNeededAsync(this, object : ProviderInstaller.ProviderInstallListener {
+            override fun onProviderInstalled() {
+                // Provider sudah terinstal, lanjutkan semua logika aplikasi
+                setupLogic()
+            }
+
+            override fun onProviderInstallFailed(errorCode: Int, intent: Intent?) {
+                // Lanjutkan setup meskipun instalasi provider gagal
+                if (intent != null) {
+                    startActivity(intent)
+                } else {
+                    Log.e("LoginActivity", "Provider install failed with code $errorCode. Continuing setup.")
+                    setupLogic()
+                }
+            }
+        })
+        // ** END: FIX CRASH **
+    }
+
+    /** Menginisialisasi Firebase Auth, memeriksa sesi, dan menyiapkan semua UI/Logic. */
+    private fun setupLogic() {
         // Inisialisasi Firebase Auth
         auth = FirebaseAuth.getInstance()
 
@@ -25,11 +51,10 @@ class LoginActivity : AppCompatActivity() {
         if (auth.currentUser != null) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
-            return // Keluar dari onCreate agar tidak menjalankan kode di bawahnya
+            return // Keluar jika user sudah login
         }
 
-        // Referensi UI
-        // Catatan: Layout Anda menggunakan etUsername untuk input email/username
+        // Referensi UI (DIDEKLARASIKAN SEBAGAI VAL LOKAL)
         val etEmail = findViewById<EditText>(R.id.etUsername)
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
@@ -67,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // Logika Sign Up link (kode yang sudah ada)
+        // Logika Sign Up link
         val spannable = android.text.SpannableString("Don’t have an account? Sign Up")
         val start = spannable.indexOf("Sign Up")
         val end = start + "Sign Up".length
