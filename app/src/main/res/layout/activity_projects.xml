@@ -47,5 +47,45 @@
         android:paddingBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/homeicon"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Home"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_frame"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Frame"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_projects"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Projects"
+            android:textColor="@color/baru" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/ic_user"
+            android:drawableTint="@color/baru"
+            android:gravity="center_horizontal"
+            android:text="Profile"
+            android:textColor="@color/baru" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

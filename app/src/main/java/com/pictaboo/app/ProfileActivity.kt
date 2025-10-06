@@ -62,7 +62,8 @@ class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogLi
     }
 
     fun goToMyPhotos(view: View) {
-        Toast.makeText(this, "Opening My Photos...", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, ProjectsActivity::class.java)
+        startActivity(intent)
     }
 
     fun goToFaq(view: View) {
