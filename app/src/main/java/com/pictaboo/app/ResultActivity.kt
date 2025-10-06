@@ -29,6 +29,9 @@ class ResultActivity : AppCompatActivity() {
 
     private val photoDao by lazy { AppDatabase.getDatabase(this).photoDao() }
     private var userId: Int = -1
+    private val PREFS_NAME = RegisterActivity.PREFS_NAME
+    private val KEY_USER_ID = RegisterActivity.KEY_USER_ID
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

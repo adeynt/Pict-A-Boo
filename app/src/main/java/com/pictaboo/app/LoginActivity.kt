@@ -8,7 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.pictaboo.app.AppDatabase
+import com.pictaboo.app.data.User
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -17,9 +17,17 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
 
-        // Inisialisasi database Room
+        // ✅ Cek session: jika user sudah login, langsung ke MainActivity
+        val prefs = getSharedPreferences(RegisterActivity.PREFS_NAME, MODE_PRIVATE)
+        val userId = prefs.getInt(RegisterActivity.KEY_USER_ID, -1)
+        if (userId != -1) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
+        setContentView(R.layout.activity_login)
         db = AppDatabase.getDatabase(this)
 
         val etEmail = findViewById<EditText>(R.id.etUsername)
@@ -27,7 +35,6 @@ class LoginActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val tvSignUpPrompt = findViewById<TextView>(R.id.tvSignUpPrompt)
 
-        // Tombol Login
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
@@ -35,26 +42,19 @@ class LoginActivity : AppCompatActivity() {
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
             } else {
-                // Query Room DB di Coroutine
                 lifecycleScope.launch {
-                    val user = db.userDao().getUserByEmail(email)
+                    val user: User? = db.userDao().getUserByEmail(email)
                     if (user != null && user.password == password) {
-                        // Login sukses
-                        Toast.makeText(this@LoginActivity, "Login successful!", Toast.LENGTH_SHORT).show()
-
-                        // Simpan session ke SharedPreferences yang sama dengan RegisterActivity
-                        val prefs = getSharedPreferences(RegisterActivity.PREFS_NAME, MODE_PRIVATE)
+                        // ✅ Login sukses → simpan session
                         with(prefs.edit()) {
                             putInt(RegisterActivity.KEY_USER_ID, user.id)
                             putString(RegisterActivity.KEY_USERNAME, user.username)
                             putString(RegisterActivity.KEY_EMAIL, user.email)
                             apply()
                         }
-
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         finish()
                     } else {
-                        // Login gagal
                         runOnUiThread {
                             Toast.makeText(this@LoginActivity, "Email or password incorrect", Toast.LENGTH_SHORT).show()
                         }
@@ -63,7 +63,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // Logika Sign Up link
+        // Sign Up link
         val spannable = android.text.SpannableString("Don’t have an account? Sign Up")
         val start = spannable.indexOf("Sign Up")
         val end = start + "Sign Up".length

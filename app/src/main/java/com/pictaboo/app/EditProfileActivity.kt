@@ -32,8 +32,8 @@ class EditProfileActivity : AppCompatActivity() {
         val btnBack = findViewById<ImageView>(R.id.btn_back)
 
         // Ambil user_id dari SharedPreferences
-        val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
-        userId = sharedPref.getInt("user_id", -1)
+        val sharedPref = getSharedPreferences(RegisterActivity.PREFS_NAME, MODE_PRIVATE)
+        userId = sharedPref.getInt(RegisterActivity.KEY_USER_ID, -1)
 
         if (userId != -1) {
             // Load data user dari Room Database

@@ -14,6 +14,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ✅ Cek session: jika user belum login, redirect ke LoginActivity
+        val prefs = getSharedPreferences(RegisterActivity.PREFS_NAME, MODE_PRIVATE)
+        val userId = prefs.getInt(RegisterActivity.KEY_USER_ID, -1)
+        if (userId == -1) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
@@ -42,8 +52,6 @@ class MainActivity : AppCompatActivity() {
         val navProject = findViewById<TextView>(R.id.nav_project)
         val navProfile = findViewById<TextView>(R.id.nav_profile)
 
-        // --- SET LISTENERS ---
-
         // Tombol Start (mengarah ke halaman Frames)
         btnStart.setOnClickListener {
             startActivity(Intent(this, Frames::class.java))
@@ -56,23 +64,18 @@ class MainActivity : AppCompatActivity() {
 
         // Navigasi Bawah
 
-        // Home (Halaman saat ini)
         navHome.setOnClickListener {
-            // Karena sudah di MainActivity, tidak perlu pindah activity
+            // Sudah di MainActivity, tidak perlu pindah
         }
 
-        // Frame
         navFrame.setOnClickListener {
             startActivity(Intent(this, Frames::class.java))
         }
 
-        // Projects (ROOM FEATURE)
         navProject.setOnClickListener {
-            // Mengarah ke halaman daftar proyek lokal
             startActivity(Intent(this, ProjectsActivity::class.java))
         }
 
-        // Profile
         navProfile.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }

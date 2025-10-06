@@ -191,7 +191,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="2"
                             android:textColor="@color/baru"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
@@ -212,7 +211,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="3"
                             android:textColor="@color/baru"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
@@ -232,7 +230,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="4"
                             android:textColor="@color/baru"
                             android:layout_marginTop="4dp"/>
                     </LinearLayout>
