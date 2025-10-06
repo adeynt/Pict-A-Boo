@@ -2,6 +2,7 @@ package com.pictaboo.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -43,6 +44,35 @@ class ProfileActivity : AppCompatActivity() {
         val btnLogout = findViewById<TextView>(R.id.menuLogout)
         btnLogout.setOnClickListener {
             showLogoutDialog()
+        }
+
+        val btnBack = findViewById<ImageView>(R.id.btn_back)
+
+        btnBack.setOnClickListener { finish() }
+
+        val navProfile = findViewById<TextView>(R.id.nav_profile)
+
+        navProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
+        val navHome = findViewById<TextView>(R.id.nav_home)
+
+        navHome.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        val navFrame = findViewById<TextView>(R.id.nav_frame)
+
+        navFrame.setOnClickListener {
+            startActivity(Intent(this, Frames::class.java))
+        }
+
+        val navProject = findViewById<TextView>(R.id.nav_project)
+
+        navProject.setOnClickListener {
+            // Mengarah ke halaman daftar proyek lokal
+            startActivity(Intent(this, ProjectsActivity::class.java))
         }
     }
 
