@@ -9,29 +9,51 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.android.gms.security.ProviderInstaller // <-- IMPORT WAJIB
+// HAPUS: import com.google.firebase.FirebaseApp
 import com.pictaboo.app.KEY_EMAIL
 import com.pictaboo.app.KEY_USERNAME
 import com.pictaboo.app.PREFS_NAME
+
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var etUsername: TextInputEditText
-    private lateinit var etEmail: TextInputEditText
-    private lateinit var etPassword: TextInputEditText
-    private lateinit var btnRegister: MaterialButton
-    private lateinit var tvLoginPrompt: TextView
-    private lateinit var auth: FirebaseAuth
+    private lateinit var auth: FirebaseAuth // Deklarasi instance Firebase Auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        auth = FirebaseAuth.getInstance()
+        // ** START: FIX CRASH (Provider Installer) **
+        ProviderInstaller.installIfNeededAsync(this, object : ProviderInstaller.ProviderInstallListener {
+            override fun onProviderInstalled() {
+                // Provider sudah terinstal, lanjutkan semua logika aplikasi
+                setupLogic()
+            }
 
-        etUsername = findViewById(R.id.etUsername)
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btnRegister = findViewById(R.id.btnRegister)
-        tvLoginPrompt = findViewById(R.id.tvLoginPrompt)
+            override fun onProviderInstallFailed(errorCode: Int, intent: Intent?) {
+                // Lanjutkan setup meskipun instalasi provider gagal
+                if (intent != null) {
+                    startActivity(intent)
+                } else {
+                    Log.e("RegisterActivity", "Provider install failed with code $errorCode. Continuing setup.")
+                    setupLogic()
+                }
+            }
+        })
+        // ** END: FIX CRASH **
+    }
+
+    private fun setupLogic() {
+        // HAPUS: FirebaseApp.initializeApp(this) // Tidak lagi diperlukan/menyebabkan error build
+
+        auth = FirebaseAuth.getInstance() // Inisialisasi Firebase pindah ke sini
+
+        // Referensi UI (Dideklarasikan sebagai val lokal)
+        val etUsername = findViewById<TextInputEditText>(R.id.etUsername)
+        val etEmail = findViewById<TextInputEditText>(R.id.etEmail)
+        val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
+        val btnRegister = findViewById<MaterialButton>(R.id.btnRegister)
+        val tvLoginPrompt = findViewById<TextView>(R.id.tvLoginPrompt)
 
         btnRegister.setOnClickListener {
             val username = etUsername.text?.toString()?.trim() ?: ""

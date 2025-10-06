@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.devtools.ksp") version "1.9.23-1.0.20"
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -52,12 +53,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation("com.google.android.gms:play-services-base:18.2.0")
-
-    implementation("com.google.firebase:firebase-core:21.1.1")
-
-    // FIREBASE (Hanya Auth yang dipertahankan)
     implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation("com.google.android.gms:play-services-base:18.2.0")
 
     // START: ROOM DATABASE (LOKAL)
     val room_version = "2.6.1"

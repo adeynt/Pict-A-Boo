@@ -10,13 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import android.util.Log
 import com.google.android.gms.security.ProviderInstaller // IMPORT WAJIB
+// HAPUS: import com.google.firebase.FirebaseApp
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth // Deklarasi instance Firebase Auth
-
-    // CATATAN: Variabel UI kini dideklarasikan sebagai 'val' di dalam setupLogic()
-    // untuk menghindari masalah lateinit / NullPointerException di luar onCreate.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +42,8 @@ class LoginActivity : AppCompatActivity() {
 
     /** Menginisialisasi Firebase Auth, memeriksa sesi, dan menyiapkan semua UI/Logic. */
     private fun setupLogic() {
+        // HAPUS: FirebaseApp.initializeApp(this) // Tidak lagi diperlukan/menyebabkan error build
+
         // Inisialisasi Firebase Auth
         auth = FirebaseAuth.getInstance()
 
