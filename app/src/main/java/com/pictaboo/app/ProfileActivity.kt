@@ -6,6 +6,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
 import com.pictaboo.app.data.User
 import kotlinx.coroutines.launch
 
@@ -13,23 +14,30 @@ class ProfileActivity : AppCompatActivity() {
 
     private lateinit var db: AppDatabase
     private var currentUser: User? = null
+    private var userId: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_profile)
+        db = AppDatabase.getDatabase(this)
 
-        // ✅ Cek session: jika belum login → redirect ke LoginActivity
+        // Ambil user_id dari SharedPreferences
         val prefs = getSharedPreferences(RegisterActivity.PREFS_NAME, MODE_PRIVATE)
-        val userId = prefs.getInt(RegisterActivity.KEY_USER_ID, -1)
+        userId = prefs.getInt(RegisterActivity.KEY_USER_ID, -1)
         if (userId == -1) {
+            // Jika session tidak ada → redirect ke LoginActivity
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        setContentView(R.layout.activity_profile)
-        db = AppDatabase.getDatabase(this)
-
         loadProfileData()
+
+        // Tombol Edit Profile
+        val btnEditProfile = findViewById<MaterialButton>(R.id.btnEditProfile)
+        btnEditProfile.setOnClickListener {
+            startActivity(Intent(this, EditProfileActivity::class.java))
+        }
 
         // Tombol Logout
         val btnLogout = findViewById<TextView>(R.id.menuLogout)
@@ -39,10 +47,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun loadProfileData() {
-        val prefs = getSharedPreferences(RegisterActivity.PREFS_NAME, MODE_PRIVATE)
-        val userId = prefs.getInt(RegisterActivity.KEY_USER_ID, -1)
-        if (userId == -1) return
-
         lifecycleScope.launch {
             currentUser = db.userDao().getUserById(userId)
             runOnUiThread {

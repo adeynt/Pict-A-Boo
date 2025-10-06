@@ -59,13 +59,14 @@ class EditProfileActivity : AppCompatActivity() {
                     val user = db.userDao().getUserById(userId)
                     if (user != null) {
                         val updatedUser = user.copy(username = newUsername, email = newEmail)
-                        db.userDao().insertUser(updatedUser) // Bisa juga pakai @Update di DAO
+                        db.userDao().updateUser(updatedUser) // ✅ pakai updateUser
                         Toast.makeText(this@EditProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
                         finish()
                     }
                 }
             }
         }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
