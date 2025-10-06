@@ -6,6 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import java.util.Date
+import com.pictaboo.app.data.User
+import com.pictaboo.app.data.UserDao
+
 
 class Converters {
     @androidx.room.TypeConverter
@@ -22,10 +25,11 @@ class Converters {
 /**
  * Kelas utama Room Database.
  */
-@Database(entities = [PhotoModel::class], version = 1, exportSchema = false)
+@Database(entities = [PhotoModel::class, User::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
+    abstract fun userDao(): UserDao // DAO untuk user
 
     companion object {
         @Volatile
@@ -38,7 +42,6 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "pictaboo_database"
                 )
-                    // FIX: Menambahkan ini untuk menghapus dan membuat ulang database jika ada masalah schema
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

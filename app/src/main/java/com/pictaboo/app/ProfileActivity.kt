@@ -10,50 +10,57 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.firebase.auth.FirebaseAuth
+import androidx.lifecycle.lifecycleScope
+import com.pictaboo.app.AppDatabase
+import com.pictaboo.app.data.User
+import kotlinx.coroutines.launch
 
-// DEKLARASI CONST VAL DI SINI
+// Const untuk SharedPreferences
 const val PREFS_NAME = "PictABooPrefs"
-const val KEY_USERNAME = "username"
-const val KEY_EMAIL = "email"
+const val KEY_USER_ID = "user_id"
 
-class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogListener { // Implementasikan interface di sini!
+class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogListener {
 
-    private lateinit var auth: FirebaseAuth
+    private lateinit var db: AppDatabase
+    private var currentUser: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_profile)
 
-        auth = FirebaseAuth.getInstance()
-        loadProfileData()
+        db = AppDatabase.getDatabase(this)
 
         val btnBack = findViewById<ImageView>(R.id.btn_back)
-
-        btnBack.setOnClickListener {
-            finish()
-        }
+        btnBack.setOnClickListener { finish() }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        loadProfileData()
     }
 
     private fun loadProfileData() {
-        if (!::auth.isInitialized) {
-            auth = FirebaseAuth.getInstance()
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        val userId = prefs.getInt(KEY_USER_ID, -1)
+
+        if (userId == -1) {
+            Toast.makeText(this, "No logged in user", Toast.LENGTH_SHORT).show()
+            return
         }
-        val currentUser = auth.currentUser
-        val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 
-        val email = currentUser?.email ?: sharedPref.getString(KEY_EMAIL, "abc@gmail.com (Default)")
-        val username = sharedPref.getString(KEY_USERNAME, "xxyyzz (Default)")
-
-        findViewById<TextView>(R.id.tvUsername).text = "Username: $username"
-        findViewById<TextView>(R.id.tvEmail).text = "Email: ${email ?: "Not Logged In"}"
+        lifecycleScope.launch {
+            currentUser = db.userDao().getUserById(userId) // Kita butuh method getUserById di UserDao
+            runOnUiThread {
+                findViewById<TextView>(R.id.tvUsername).text =
+                    "Username: ${currentUser?.username ?: "Default"}"
+                findViewById<TextView>(R.id.tvEmail).text =
+                    "Email: ${currentUser?.email ?: "Default"}"
+            }
+        }
     }
 
     override fun onResume() {
@@ -62,25 +69,21 @@ class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogLi
     }
 
     fun goToMyPhotos(view: View) {
-        val intent = Intent(this, ProjectsActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, ProjectsActivity::class.java))
     }
 
     fun goToFaq(view: View) {
-        val intent = Intent(this, FaqActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, FaqActivity::class.java))
     }
 
     fun goToAboutApp(view: View) {
-        val intent = Intent(this, AboutAppActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, AboutAppActivity::class.java))
     }
 
     fun editProfile(view: View) {
         startActivity(Intent(this, EditProfileActivity::class.java))
     }
 
-    // Dipanggil dari menuLogout
     fun logout(view: View) {
         val logoutDialog = LogoutDialogFragment()
         logoutDialog.setLogoutDialogListener(this)
@@ -88,9 +91,11 @@ class ProfileActivity : AppCompatActivity(), LogoutDialogFragment.LogoutDialogLi
     }
 
     override fun onLogoutConfirmed() {
-        auth.signOut()
-        Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show()
+        // Hapus session
+        val prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        prefs.edit().remove(KEY_USER_ID).apply()
 
+        Toast.makeText(this, "Logging out...", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, WelcomeActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

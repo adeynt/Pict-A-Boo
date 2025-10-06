@@ -8,36 +8,45 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
-
+import com.pictaboo.app.AppDatabase
+import com.pictaboo.app.data.User
+import kotlinx.coroutines.launch
 
 class EditProfileActivity : AppCompatActivity() {
+
+    private lateinit var db: AppDatabase
+    private var userId: Int = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_edit_profile)
 
-        // Inisialisasi View
+        db = AppDatabase.getDatabase(this)
+
         val etUsername = findViewById<EditText>(R.id.etUsername)
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val btnSave = findViewById<MaterialButton>(R.id.btnSave)
         val btnBack = findViewById<ImageView>(R.id.btn_back)
 
-        // Dapatkan instance Shared Preferences
+        // Ambil user_id dari SharedPreferences
         val sharedPref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        userId = sharedPref.getInt("user_id", -1)
 
-        // Memuat data yang sudah tersimpan atau menggunakan data dummy awal
-        val currentUsername = sharedPref.getString(KEY_USERNAME, "xxyyzz")
-        val currentEmail = sharedPref.getString(KEY_EMAIL, "abc@gmail.com")
-
-        // Mengisi field input dengan data yang termuat
-        etUsername.setText(currentUsername)
-        etEmail.setText(currentEmail)
-
-        // Listener Tombol Kembali
-        btnBack.setOnClickListener {
-            finish()
+        if (userId != -1) {
+            // Load data user dari Room Database
+            lifecycleScope.launch {
+                val user = db.userDao().getUserById(userId)
+                if (user != null) {
+                    etUsername.setText(user.username)
+                    etEmail.setText(user.email)
+                }
+            }
         }
+
+        btnBack.setOnClickListener { finish() }
 
         btnSave.setOnClickListener {
             val newUsername = etUsername.text.toString().trim()
@@ -45,15 +54,16 @@ class EditProfileActivity : AppCompatActivity() {
 
             if (newUsername.isEmpty() || newEmail.isEmpty()) {
                 Toast.makeText(this, "Username and Email cannot be empty", Toast.LENGTH_SHORT).show()
-            } else {
-                with (sharedPref.edit()) {
-                    putString(KEY_USERNAME, newUsername)
-                    putString(KEY_EMAIL, newEmail)
-                    apply() // Menyimpan secara asinkron
+            } else if (userId != -1) {
+                lifecycleScope.launch {
+                    val user = db.userDao().getUserById(userId)
+                    if (user != null) {
+                        val updatedUser = user.copy(username = newUsername, email = newEmail)
+                        db.userDao().insertUser(updatedUser) // Bisa juga pakai @Update di DAO
+                        Toast.makeText(this@EditProfileActivity, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
                 }
-
-                Toast.makeText(this, "Profile updated successfully!", Toast.LENGTH_SHORT).show()
-                finish() // Kembali ke halaman Profile
             }
         }
 

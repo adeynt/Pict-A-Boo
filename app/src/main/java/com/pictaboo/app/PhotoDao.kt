@@ -5,16 +5,13 @@ import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Interface Data Access Object untuk mengakses data PhotoModel dari Room Database.
- */
 @Dao
 interface PhotoDao {
 
     @Insert
     suspend fun insertPhoto(photo: PhotoModel): Long
 
-    @Query("SELECT * FROM photos WHERE localUserId = :userId ORDER BY timestamp DESC")
-    fun getUserPhotos(userId: String): Flow<List<PhotoModel>> // Kueri menggunakan localUserId
+    // Ambil foto milik user tertentu berdasarkan localUserId
+    @Query("SELECT * FROM photos WHERE UserId = :userId ORDER BY timestamp DESC")
+    fun getUserPhotos(userId: Int): Flow<List<PhotoModel>>
 }
-
