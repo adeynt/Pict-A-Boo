@@ -8,5 +8,6 @@ data class User(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val username: String,
     val email: String,
-    val password: String
+    val password: String,
+    val profilePictureUri: String? = null // BARU: Menambahkan kolom untuk URI foto profil
 )

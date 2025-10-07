@@ -25,7 +25,7 @@ class Converters {
 /**
  * Kelas utama Room Database.
  */
-@Database(entities = [PhotoModel::class, User::class], version = 2, exportSchema = false)
+@Database(entities = [PhotoModel::class, User::class], version = 3, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
